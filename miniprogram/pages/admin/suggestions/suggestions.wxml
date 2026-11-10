@@ -1,0 +1,31 @@
+<!-- pages/admin/suggestions/suggestions.wxml -->
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <view wx:elif="{{list.length === 0}}" class="empty">
+    <view class="empty-icon">📭</view>
+    <view>还没有收到建议</view>
+  </view>
+
+  <block wx:else>
+    <view class="sg-item card" wx:for="{{list}}" wx:key="_id">
+    <view class="sg-head">
+      <text class="sg-user">{{item.nickname || '匿名同学'}}</text>
+      <text class="sg-status {{item.status === 'done' ? 'sg-done' : ''}}">
+        {{item.status === 'done' ? '已处理' : '待处理'}}
+      </text>
+    </view>
+    <view class="sg-content">{{item.content}}</view>
+    <view class="sg-foot">
+      <text class="sg-time">{{item.createdAtStr}}</text>
+      <text wx:if="{{item.contact}}" class="sg-contact">📞 {{item.contact}}</text>
+    </view>
+    <view
+      wx:if="{{item.status !== 'done'}}"
+      class="sg-btn"
+      data-id="{{item._id}}"
+      bindtap="markDone"
+    >标记为已处理</view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,167 @@
+<!-- pages/admin/stats/stats.wxml -->
+<view class="container">
+
+  <!-- 日期筛选 -->
+  <view class="filter-bar card">
+    <view class="filter-left">
+      <text class="filter-label">统计日期：</text>
+      <picker mode="date" value="{{dateFilter}}" bindchange="onDateChange">
+        <text class="filter-date">{{dateFilter || '全部时间'}} ›</text>
+      </picker>
+      <text wx:if="{{dateFilter}}" class="clear-btn" bindtap="clearDate">清除</text>
+    </view>
+    <view class="refresh-btn" bindtap="refresh">🔄</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <block wx:elif="{{stats}}">
+    <!-- 汇总卡片 -->
+    <view class="card summary-card">
+      <view class="summary-title">📊 预约统计总览</view>
+      <view class="summary-total">
+        <text class="total-num">{{stats.total}}</text>
+        <text class="total-label">总预约数</text>
+      </view>
+
+      <view class="status-list">
+        <view class="status-row">
+          <view class="status-info">
+            <view class="dot dot-booked"></view>
+            <text class="status-name">已预约</text>
+          </view>
+          <view class="status-right">
+            <text class="status-num">{{stats.booked}}</text>
+            <text class="status-pct">{{stats.bookedPct}}%</text>
+          </view>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-filled progress-booked" style="width: {{stats.bookedPct}}%"></view>
+        </view>
+
+        <view class="status-row">
+          <view class="status-info">
+            <view class="dot dot-checkedin"></view>
+            <text class="status-name">已签到</text>
+          </view>
+          <view class="status-right">
+            <text class="status-num">{{stats.checkedin}}</text>
+            <text class="status-pct">{{stats.checkedinPct}}%</text>
+          </view>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-filled progress-checkedin" style="width: {{stats.checkedinPct}}%"></view>
+        </view>
+
+        <view class="status-row">
+          <view class="status-info">
+            <view class="dot dot-completed"></view>
+            <text class="status-name">已完成</text>
+          </view>
+          <view class="status-right">
+            <text class="status-num">{{stats.completed}}</text>
+            <text class="status-pct">{{stats.completedPct}}%</text>
+          </view>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-filled progress-completed" style="width: {{stats.completedPct}}%"></view>
+        </view>
+
+        <view class="status-row">
+          <view class="status-info">
+            <view class="dot dot-cancelled"></view>
+            <text class="status-name">已取消</text>
+          </view>
+          <view class="status-right">
+            <text class="status-num">{{stats.cancelled}}</text>
+            <text class="status-pct">{{stats.cancelledPct}}%</text>
+          </view>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-filled progress-cancelled" style="width: {{stats.cancelledPct}}%"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 运营看板：上座率 / 爽约率 / 高峰时段 -->
+    <view class="card dashboard-card">
+      <view class="summary-title">📈 运营看板</view>
+
+      <view class="kpi-row">
+        <view class="kpi">
+          <view class="kpi-num">{{stats.occupancyRate}}%</view>
+          <view class="kpi-label">上座率</view>
+          <view class="kpi-sub">{{stats.activeSeats}}/{{stats.totalSeats}} 座</view>
+        </view>
+        <view class="kpi">
+          <view class="kpi-num kpi-warn">{{stats.noShowRate}}%</view>
+          <view class="kpi-label">爽约率</view>
+          <view class="kpi-sub">{{stats.noShow}} 次超时</view>
+        </view>
+        <view class="kpi">
+          <view class="kpi-num kpi-blue">{{stats.peakHour ? stats.peakHour.hour : '—'}}</view>
+          <view class="kpi-label">高峰时段</view>
+          <view class="kpi-sub">{{stats.peakHour ? stats.peakHour.count + ' 次预约' : '暂无数据'}}</view>
+        </view>
+      </view>
+
+      <view wx:if="{{stats.hasHourly}}" class="hour-chart">
+        <view class="hour-chart-title">开始时间分布</view>
+        <view wx:for="{{stats.hourly}}" wx:key="hour" class="hour-row">
+          <text class="hour-label">{{item.hour}}</text>
+          <view class="hour-bar-bg">
+            <view class="hour-bar" style="width: {{item.pct}}%"></view>
+          </view>
+          <text class="hour-count">{{item.count}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 近 7 天趋势 -->
+    <view class="card dashboard-card">
+      <view class="trend-head flex-between">
+        <text class="summary-title">📉 近 7 天趋势</text>
+        <view class="export-btn" bindtap="exportCsv">导出 CSV</view>
+      </view>
+
+      <view wx:if="{{stats.hasTrend}}" class="trend-chart">
+        <view wx:for="{{stats.trend}}" wx:key="date" class="trend-col">
+          <view class="trend-bars">
+            <view class="trend-bar trend-total" style="height: {{item.totalPct}}%"></view>
+            <view class="trend-bar trend-in" style="height: {{item.checkedinPct}}%"></view>
+          </view>
+          <text class="trend-count">{{item.total}}</text>
+          <text class="trend-label">{{item.label}}</text>
+        </view>
+      </view>
+      <view wx:else class="empty">暂无数据</view>
+
+      <view class="trend-legend">
+        <view class="legend-item"><view class="legend-dot legend-total"></view><text>预约量</text></view>
+        <view class="legend-item"><view class="legend-dot legend-in"></view><text>实际到座</text></view>
+      </view>
+    </view>
+
+    <!-- 按自习室统计 -->
+    <view class="card">
+      <view class="summary-title">🏫 按自习室统计</view>
+
+      <block wx:if="{{stats.roomList && stats.roomList.length > 0}}">
+        <view wx:for="{{stats.roomList}}" wx:key="roomId" wx:for-item="room" class="room-stat">
+          <view class="room-stat-top flex-between">
+            <text class="room-name ellipsis">{{room.name}}</text>
+            <text class="room-count">{{room.total}} 次预约</text>
+          </view>
+          <view class="room-stat-bar">
+            <view class="room-bar-bg">
+              <view class="room-bar-filled" style="width: {{room.pctNum}}%"></view>
+            </view>
+            <text class="room-pct">{{room.pct}}%</text>
+          </view>
+        </view>
+      </block>
+
+      <view wx:else class="empty">暂无数据</view>
+    </view>
+  </block>
+</view>

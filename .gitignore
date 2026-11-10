@@ -1,0 +1,19 @@
+﻿# 依赖
+node_modules/
+package-lock.json
+
+# 微信开发者工具
+.project.config.json.user
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.log
+
+# 云函数本地依赖（需要时单独部署）
+cloudfunctions/*/node_modules/
+cloudfunctions/*/package-lock.json
+
+# 生成的临时文件
+.tmp/
+.cache/

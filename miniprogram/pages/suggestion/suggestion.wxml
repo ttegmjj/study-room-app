@@ -1,0 +1,44 @@
+<!-- pages/suggestion/suggestion.wxml -->
+<view class="container">
+
+  <!-- 提交建议 -->
+  <view class="card">
+    <view class="section-title">💡 我要提建议</view>
+    <view class="hint">对自习室的设施、开放时间、预约规则等有任何想法，欢迎告诉我们</view>
+    <textarea
+      class="content-input"
+      placeholder="请写下你的建议..."
+      maxlength="500"
+      value="{{content}}"
+      bindinput="onContentInput"
+    />
+    <input
+      class="contact-input"
+      placeholder="联系方式（选填，方便我们回复你）"
+      value="{{contact}}"
+      bindinput="onContactInput"
+    />
+    <view class="btn-submit {{submitting ? 'btn-disabled' : ''}}" bindtap="submit">
+      {{submitting ? '提交中...' : '提交建议'}}
+    </view>
+  </view>
+
+  <!-- 我的建议 -->
+  <view class="card">
+    <view class="section-title">📨 我的建议</view>
+    <view wx:if="{{loading}}" class="loading">加载中...</view>
+    <view wx:elif="{{myList.length === 0}}" class="empty">还没有提交过建议</view>
+    <view wx:else>
+      <view class="sg-item" wx:for="{{myList}}" wx:key="_id">
+        <view class="sg-head">
+          <text class="sg-time">{{item.createdAtStr}}</text>
+          <text class="sg-status {{item.status === 'done' ? 'sg-done' : ''}}">
+            {{item.status === 'done' ? '已处理' : '待处理'}}
+          </text>
+        </view>
+        <view class="sg-content">{{item.content}}</view>
+      </view>
+    </view>
+  </view>
+
+</view>

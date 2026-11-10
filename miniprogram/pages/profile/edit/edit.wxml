@@ -1,0 +1,49 @@
+<!-- pages/profile/edit/edit.wxml -->
+<view class="page">
+
+  <!-- 头像 -->
+  <view class="group">
+    <button class="row row-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar" hover-class="row-hover" disabled="{{saving}}">
+      <text class="row-label">头像</text>
+      <view class="row-right">
+        <image wx:if="{{avatarUrl}}" class="row-avatar" src="{{avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="row-avatar avatar-ph">👤</view>
+        <text class="chevron">›</text>
+      </view>
+    </button>
+  </view>
+
+  <!-- 名字 -->
+  <view class="group">
+    <view class="row" bindtap="editName" hover-class="row-hover">
+      <text class="row-label">名字</text>
+      <view class="row-right">
+        <text class="row-value {{name ? '' : 'row-empty'}}">{{name || '未填写'}}</text>
+        <text class="chevron">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 手机号 -->
+  <view class="group">
+    <view class="row" bindtap="editPhone" hover-class="row-hover">
+      <text class="row-label">手机号</text>
+      <view class="row-right">
+        <text class="row-value {{phoneDisplay === '未填写' ? 'row-empty' : ''}}">{{phoneDisplay}}</text>
+        <text class="chevron">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 只读信息 -->
+  <view class="group">
+    <view class="row">
+      <text class="row-label">账号身份</text>
+      <view class="row-right">
+        <text class="row-value">{{isAdmin ? '管理员' : '普通用户'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="tips">头像和名字会显示在我的预约、论坛等页面。点击对应项即可修改，保存后立即生效。</view>
+</view>

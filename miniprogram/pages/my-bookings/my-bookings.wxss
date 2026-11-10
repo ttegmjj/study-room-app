@@ -1,0 +1,146 @@
+/* pages/my-bookings/my-bookings.wxss */
+
+.tab-bar {
+  background: #fff;
+  white-space: nowrap;
+  padding: 20rpx 10rpx;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  margin: -30rpx -30rpx 30rpx;
+  width: auto;
+}
+
+.tab-item {
+  display: inline-block;
+  padding: 12rpx 28rpx;
+  margin: 0 6rpx;
+  font-size: 26rpx;
+  color: #666;
+  border-radius: 30rpx;
+}
+
+.tab-active {
+  background: #4A90D9;
+  color: #fff;
+}
+
+.booking-card {
+  padding-bottom: 20rpx;
+}
+
+.booking-top {
+  margin-bottom: 16rpx;
+}
+
+.booking-room {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.booking-info {
+  background: #f8f9fb;
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+}
+
+.info-row {
+  font-size: 26rpx;
+  color: #555;
+  padding: 4rpx 0;
+}
+
+.info-icon {
+  margin-right: 12rpx;
+}
+
+.check-time {
+  font-size: 24rpx;
+  color: #4A90D9;
+  margin-top: 10rpx;
+}
+
+.cancel-reason {
+  margin-top: 14rpx;
+  padding: 12rpx 18rpx;
+  border-radius: 10rpx;
+  background: #FFF1F0;
+  font-size: 23rpx;
+  color: #CF4343;
+  line-height: 1.5;
+}
+
+.booking-actions {
+  margin-top: 10rpx;
+}
+
+.btn-ghost {
+  color: #999;
+  font-size: 26rpx;
+  padding: 10rpx 20rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 30rpx;
+}
+
+.btn-primary-sm {
+  background: #4A90D9;
+  color: #fff;
+  padding: 12rpx 36rpx;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+}
+
+.more-btn {
+  color: #4A90D9;
+  font-size: 26rpx;
+}
+
+.empty-btn {
+  margin-top: 28rpx;
+  padding: 16rpx 48rpx;
+  background: #4A90D9;
+  color: #fff;
+  font-size: 26rpx;
+  border-radius: 30rpx;
+}
+
+.clean-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+  padding: 16rpx 24rpx;
+  background: #fff8ec;
+  border: 2rpx solid #ffe2b8;
+  border-radius: 14rpx;
+}
+
+.clean-text {
+  flex: 1;
+  margin-right: 16rpx;
+  font-size: 22rpx;
+  color: #a9761c;
+  line-height: 1.5;
+}
+
+.clean-btn {
+  flex-shrink: 0;
+  padding: 10rpx 24rpx;
+  background: #ff9f1c;
+  color: #fff;
+  font-size: 23rpx;
+  border-radius: 26rpx;
+}
+
+.btn-delete {
+  padding: 8rpx 20rpx;
+  color: #d1604b;
+  font-size: 24rpx;
+  border: 2rpx solid #f2c9be;
+  border-radius: 26rpx;
+  background: #fff;
+}

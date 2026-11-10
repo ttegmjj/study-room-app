@@ -1,0 +1,82 @@
+<!-- pages/admin/appearance/appearance.wxml -->
+<view class="container">
+  <!-- 预览 -->
+  <view class="card">
+    <view class="card-title">效果预览</view>
+    <view class="preview">
+      <view class="preview-bg">
+        <image
+          wx:if="{{(preview.isCustom || preview.isImage) && preview.imageSrc}}"
+          class="preview-img"
+          src="{{preview.imageSrc}}"
+          mode="aspectFill"
+        />
+        <view wx:elif="{{preview.isCustom}}" class="preview-img preview-empty">未选择图片</view>
+        <view wx:else class="preview-img" style="{{preview.bgStyle || 'background:#f5f6fa;'}}"></view>
+        <view class="preview-overlay" style="{{preview.overlayStyle}}"></view>
+      </view>
+      <view class="preview-content">
+        <view class="preview-card strong"></view>
+        <view class="preview-card"></view>
+        <view class="preview-card short"></view>
+      </view>
+    </view>
+    <view class="preview-tip">白色块代表页面卡片，壁纸只在卡片间隙露出</view>
+  </view>
+
+  <!-- 预设壁纸 -->
+  <view class="card">
+    <view class="card-title">预设壁纸</view>
+    <view class="preset-grid">
+      <view wx:for="{{presets}}" wx:key="id" class="preset-item">
+        <view
+          class="preset-swatch {{wallpaperId === item.id ? 'preset-active' : ''}}"
+          style="{{!item.gradient && !item.image ? 'background: #f5f6fa;' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="selectPreset"
+        >
+          <image wx:if="{{item.image}}" class="preset-img" src="{{item.image}}" mode="aspectFill" />
+          <view wx:elif="{{item.gradient}}" class="preset-gradient" style="{{'background: ' + item.gradient}}"></view>
+          <view wx:if="{{wallpaperId === item.id}}" class="preset-check">✓</view>
+        </view>
+        <view class="preset-name">{{item.name}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 自定义图片 -->
+  <view class="card">
+    <view class="card-title">自定义图片</view>
+    <view class="custom-row" bindtap="chooseImage">
+      <view class="custom-info">
+        <view class="custom-name">
+          自定义壁纸
+          <text wx:if="{{wallpaperId === 'custom'}}" class="using-tag">使用中</text>
+        </view>
+        <view class="custom-sub">{{customFileID ? '已上传，点此重新选择' : '从相册选择一张图片，建议竖图'}}</view>
+      </view>
+      <view class="custom-btn">选择图片</view>
+    </view>
+  </view>
+
+  <!-- 蒙层 -->
+  <view class="card">
+    <view class="card-title">蒙层浓度 {{overlayPercent}}%</view>
+    <slider
+      value="{{overlayPercent}}"
+      min="0"
+      max="80"
+      step="5"
+      activeColor="#4A90D9"
+      block-size="22"
+      bindchanging="onOverlayChange"
+      bindchange="onOverlayChange"
+    />
+    <view class="slider-tip">壁纸颜色较深时，适当加蒙层可保证文字清晰</view>
+  </view>
+
+  <view class="btn-primary save-btn {{saving ? 'disabled' : ''}}" bindtap="save">
+    {{saving ? '保存中...' : '保存并立即生效'}}
+  </view>
+  <view class="tip">保存后，所有用户下次进入页面即可看到新壁纸</view>
+</view>

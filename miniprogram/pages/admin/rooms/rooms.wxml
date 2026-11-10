@@ -1,0 +1,35 @@
+<!-- pages/admin/rooms/rooms.wxml -->
+<view class="container">
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <block wx:elif="{{rooms.length > 0}}">
+    <view wx:for="{{rooms}}" wx:key="_id" class="card room-card">
+      <view class="room-top flex-between">
+        <view class="room-name ellipsis">{{item.name}}</view>
+        <view class="room-loc">{{item.location}}</view>
+      </view>
+      <view class="room-desc ellipsis">{{item.description}}</view>
+      <view class="room-meta">
+        <text>🕐 {{item.openTime}} - {{item.closeTime}}</text>
+        <text class="ml-20">🪑 {{item.seatCount}} 座位</text>
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="room-actions">
+        <view class="act-btn" bindtap="manageSeats" data-id="{{item._id}}" data-name="{{item.name}}">🪑 座位</view>
+        <view class="act-btn" bindtap="editRoom" data-id="{{item._id}}">✏️ 编辑</view>
+        <view class="act-btn act-danger" bindtap="deleteRoom" data-id="{{item._id}}" data-name="{{item.name}}">🗑️ 删除</view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="empty">
+    <view class="empty-icon">🏫</view>
+    <view>暂无自习室，点击下方按钮添加</view>
+  </view>
+
+  <!-- 新增按钮 -->
+  <view class="fab" bindtap="addRoom">＋</view>
+</view>

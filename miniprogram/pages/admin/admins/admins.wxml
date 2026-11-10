@@ -1,0 +1,58 @@
+<!-- pages/admin/admins/admins.wxml -->
+<view class="container">
+
+  <view class="card tip-card">
+    <view class="tip-title">👥 管理员权限</view>
+    <view class="tip-text">管理员可以进入管理后台、设置座位和查看统计。新增管理员需对方先打开过小程序并登录（会出现在下方列表）。</view>
+  </view>
+
+  <view class="card search-card">
+    <view class="search-row">
+      <input class="search-input" placeholder="按昵称搜索用户" value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch" />
+      <view class="search-btn" bindtap="onSearch">搜索</view>
+      <view wx:if="{{keyword}}" class="clear-btn" bindtap="clearSearch">清除</view>
+    </view>
+    <view class="count-hint">当前共 {{users.length}} 位用户，其中管理员 {{adminCount}} 位</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <block wx:else>
+    <view wx:if="{{users.length === 0}}" class="empty">暂无用户（对方需先打开小程序并登录）</view>
+
+    <view wx:for="{{users}}" wx:key="_id" class="user-item card">
+      <view class="user-left">
+        <image wx:if="{{item.avatar}}" class="user-avatar" src="{{item.avatar}}" mode="aspectFill" />
+        <view wx:else class="user-avatar avatar-text">{{item.initial}}</view>
+        <view class="user-info">
+          <view class="user-name">
+            {{item.name}}
+            <text wx:if="{{item.isSelf}}" class="tag tag-self">我</text>
+            <text wx:if="{{item.isAdmin}}" class="tag tag-admin">管理员</text>
+            <text wx:if="{{item.banHours > 0}}" class="tag tag-ban">禁约中</text>
+          </view>
+          <view class="user-openid">ID …{{item.openidTail}}</view>
+        </view>
+      </view>
+
+      <view wx:if="{{!item.isSelf}}" class="user-ops">
+        <view
+          class="op-btn op-ban"
+          bindtap="banUser"
+          data-openid="{{item.openid}}"
+          data-name="{{item.name}}"
+          data-banhours="{{item.banHours}}"
+        >{{item.banHours > 0 ? '解除禁约' : '禁约'}}</view>
+        <view
+          class="op-btn {{item.isAdmin ? 'op-cancel' : 'op-add'}}"
+          bindtap="toggleAdmin"
+          data-openid="{{item.openid}}"
+          data-name="{{item.name}}"
+          data-status="{{item.isAdmin ? 1 : 0}}"
+        >
+          {{item.isAdmin ? '取消管理员' : '设为管理员'}}
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

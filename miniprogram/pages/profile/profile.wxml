@@ -1,0 +1,172 @@
+﻿<!-- pages/profile/profile.wxml -->
+<view wx:if="{{wallpaper && wallpaper.hasWallpaper}}" class="wallpaper">
+  <image wx:if="{{wallpaper.isCustom || wallpaper.isImage}}" class="wallpaper-image" src="{{wallpaper.imageSrc}}" mode="aspectFill" />
+  <view wx:else class="wallpaper-gradient" style="{{wallpaper.bgStyle}}"></view>
+  <view class="wallpaper-overlay" style="{{wallpaper.overlayStyle}}"></view>
+</view>
+
+<view class="container">
+
+  <!-- ========== 未登录态 ========== -->
+  <block wx:if="{{!isLoggedIn}}">
+    <view class="profile-header logged-out">
+      <view class="avatar-wrap avatar-default">
+        <text class="avatar-emoji-icon">👤</text>
+      </view>
+      <view class="user-detail">
+        <view class="user-name">未登录</view>
+        <view class="user-sub">登录后可预约座位、查看记录</view>
+      </view>
+    </view>
+
+    <view class="login-card card">
+      <view class="login-tip"><text class="login-tip-icon">📢</text>登录说明</view>
+      <view class="login-tip-desc">首次登录将自动为你注册账号，预约记录、签到信息会绑定到你的微信身份。登录后可随时编辑昵称和头像。</view>
+      <view class="login-btn" bindtap="doLogin">
+        📱 微信一键登录
+      </view>
+    </view>
+  </block>
+
+  <!-- ========== 已登录态 ========== -->
+  <block wx:else>
+    <!-- 用户头部 -->
+    <view class="profile-header">
+      <view class="avatar-wrap" bindtap="goToEditProfile">
+        <block wx:if="{{userInfo.avatarUrl}}">
+          <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+        </block>
+        <block wx:else>
+          <view class="avatar avatar-placeholder">
+            <text class="avatar-ph-icon">👤</text>
+          </view>
+        </block>
+        <view class="avatar-edit">编辑</view>
+      </view>
+      <view class="user-detail" bindtap="goToEditProfile">
+        <view class="user-name">{{userInfo.nickName || '点击设置昵称'}}</view>
+        <view class="user-tag" wx:if="{{isAdmin}}">🛡️ 管理员</view>
+      </view>
+    </view>
+
+    <!-- 爽约 / 禁约提醒 -->
+    <view wx:if="{{myStats.banHours > 0}}" class="ban-banner">
+      <text class="ban-emoji">⛔</text>
+      <view class="ban-body">
+        <view class="ban-title">因连续爽约，你暂时无法预约</view>
+        <view class="ban-sub">约 {{myStats.banHours}} 小时后自动恢复；如有疑问可前往「联系我们」申诉</view>
+      </view>
+    </view>
+    <view wx:elif="{{myStats.noShowCount > 0}}" class="no-show-tip">
+      ⚠️ 已连续爽约 {{myStats.noShowCount}} 次，累计 3 次将限制预约 1 天
+    </view>
+
+    <!-- 统计卡片 -->
+    <view class="card stats-card">
+      <view class="stat-item">
+        <view class="stat-num">{{myStats.totalHours || 0}}<text class="stat-unit">h</text></view>
+        <view class="stat-label">累计学习</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-num">{{myStats.checkinDays || 0}}</view>
+        <view class="stat-label">打卡天数</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-num">{{myStats.weekCount || 0}}</view>
+        <view class="stat-label">本周预约</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item" bindtap="goToMyBookings">
+        <view class="stat-num"><text class="stat-emoji-img">📅</text></view>
+        <view class="stat-label">我的预约</view>
+      </view>
+    </view>
+
+    <!-- t2: 常用座位（收藏） -->
+    <view class="card fav-seats-card" wx:if="{{favoriteSeats.length > 0}}">
+      <view class="card-head">
+        <text class="card-title"><text class="card-icon">⭐</text>常用座位</text>
+        <text class="card-sub">点击「去预约」快速进入</text>
+      </view>
+      <view class="fav-seat-list">
+        <view wx:for="{{favoriteSeats}}" wx:key="seatId" class="fav-seat-item">
+          <view class="fav-seat-left">
+            <view class="fav-seat-code"><text class="fav-seat-icon">🪑</text>{{item.seatCode}}</view>
+            <view class="fav-seat-room">{{item.roomName}}</view>
+          </view>
+          <view class="fav-seat-actions">
+            <view class="fav-seat-btn"
+              data-roomid="{{item.roomId}}"
+              data-roomname="{{item.roomName}}"
+              data-seatid="{{item.seatId}}"
+              data-seatcode="{{item.seatCode}}"
+              bindtap="goToFavoriteBooking">去预约</view>
+            <view class="fav-seat-del"
+              data-roomid="{{item.roomId}}"
+              data-seatid="{{item.seatId}}"
+              bindtap="removeFavoriteSeat">移除</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 主菜单 -->
+    <view class="card menu-card">
+      <view class="menu-item" bindtap="goToMyBookings">
+        <text class="menu-icon-img">📅</text>
+        <text class="menu-label">我的预约</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-divider"></view>
+      <view class="menu-item" bindtap="goToAdmin">
+        <text class="menu-icon-img">⚙️</text>
+        <text class="menu-label">管理后台</text>
+        <text class="menu-lock-img">🔒</text>
+        <text class="menu-arrow">›</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- ========== 下方通用菜单 ========== -->
+  <view class="card menu-card">
+    <view class="menu-item" bindtap="goToAIDemo">
+      <text class="menu-icon">🤖</text>
+      <text class="menu-label">AI 智能助手</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="goToSuggestion">
+      <text class="menu-icon">💬</text>
+      <text class="menu-label">征集建议</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="showContact">
+      <text class="menu-icon">📞</text>
+      <text class="menu-label">联系我们</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="showAbout">
+      <text class="menu-icon">ℹ️</text>
+      <text class="menu-label">关于</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="clearCache">
+      <text class="menu-icon">🗑️</text>
+      <text class="menu-label">清除缓存</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 退出登录按钮（仅已登录显示） -->
+  <view wx:if="{{isLoggedIn}}" class="logout-wrap">
+    <view class="logout-btn" bindtap="doLogout">退出登录</view>
+  </view>
+
+  <!-- 版本信息 -->
+  <view class="version">v1.0.0</view>
+</view>

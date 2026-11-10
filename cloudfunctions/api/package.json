@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "自习室预约小程序统一API",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~4.0.1"
+  }
+}

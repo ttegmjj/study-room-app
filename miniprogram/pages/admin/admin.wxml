@@ -1,0 +1,98 @@
+﻿<!-- pages/admin/admin.wxml -->
+<view class="container">
+
+  <view wx:if="{{!isAdmin && !loading}}" class="no-permission">
+    <text class="no-perm-icon">🔒</text>
+    <view class="no-perm-text">你不是管理员，无法访问此页面</view>
+    <view class="no-perm-tip">请联系超级管理员设置权限</view>
+    <view class="bootstrap-btn" bindtap="bootstrapAdmin">🛡️ 自助初始化管理员</view>
+    <view class="bootstrap-tip">仅当系统还没有任何管理员时可用</view>
+  </view>
+
+  <block wx:elif="{{isAdmin}}">
+    <!-- 欢迎 -->
+    <view class="admin-header">
+      <view class="admin-title">🛡️ 管理后台</view>
+      <view class="admin-sub">自习室预约管理系统</view>
+    </view>
+
+    <!-- 快速统计 -->
+    <view wx:if="{{stats}}" class="card stats-grid">
+      <view class="grid-item">
+        <view class="grid-num">{{stats.total}}</view>
+        <view class="grid-label">总预约</view>
+      </view>
+      <view class="grid-item color-booked">
+        <view class="grid-num">{{stats.booked}}</view>
+        <view class="grid-label">已预约</view>
+      </view>
+      <view class="grid-item color-checkedin">
+        <view class="grid-num">{{stats.checkedin}}</view>
+        <view class="grid-label">已签到</view>
+      </view>
+      <view class="grid-item color-completed">
+        <view class="grid-num">{{stats.completed}}</view>
+        <view class="grid-label">已完成</view>
+      </view>
+    </view>
+
+    <!-- 功能菜单 -->
+    <view class="card admin-menu">
+      <view class="menu-title">自习室管理</view>
+      <view class="menu-grid">
+        <view class="menu-item" bindtap="goTo" data-url="/pages/admin/rooms/rooms">
+          <text class="menu-emoji-img">🏫</text>
+          <view class="menu-text">自习室</view>
+        </view>
+        <view class="menu-item" bindtap="goTo" data-url="/pages/admin/seats/seats">
+          <text class="menu-emoji-img">🪑</text>
+          <view class="menu-text">座位</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card admin-menu">
+      <view class="menu-title">预约管理</view>
+      <view class="menu-grid">
+        <view class="menu-item" bindtap="goTo" data-url="/pages/admin/bookings/bookings">
+          <text class="menu-emoji-img">📅</text>
+          <view class="menu-text">预约记录</view>
+        </view>
+        <view class="menu-item" bindtap="goTo" data-url="/pages/admin/stats/stats">
+          <text class="menu-emoji-img">📊</text>
+          <view class="menu-text">数据统计</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card admin-menu">
+      <view class="menu-title">外观设置</view>
+      <view class="menu-grid">
+        <view class="menu-item" bindtap="goTo" data-url="/pages/admin/appearance/appearance">
+          <view class="menu-emoji">🎨</view>
+          <view class="menu-text">页面壁纸</view>
+        </view>
+        <view class="menu-item" bindtap="goTo" data-url="/pages/admin/notice/notice">
+          <text class="menu-emoji-img">📢</text>
+          <view class="menu-text">公告管理</view>
+        </view>
+        <view class="menu-item" bindtap="goTo" data-url="/pages/admin/suggestions/suggestions">
+          <text class="menu-emoji-img">💡</text>
+          <view class="menu-text">建议箱</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card admin-menu">
+      <view class="menu-title">系统管理</view>
+      <view class="menu-grid">
+        <view class="menu-item" bindtap="goTo" data-url="/pages/admin/admins/admins">
+          <text class="menu-emoji-img">👤</text>
+          <view class="menu-text">管理员</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:elif="{{loading}}" class="loading">加载中...</view>
+</view>

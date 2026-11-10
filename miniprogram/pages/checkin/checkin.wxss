@@ -1,0 +1,162 @@
+/* pages/checkin/checkin.wxss */
+
+.status-card {
+  text-align: center;
+  padding: 60rpx 30rpx;
+  border-radius: 20rpx;
+  color: #fff;
+  margin-bottom: 30rpx;
+}
+
+.status-booked {
+  background: linear-gradient(135deg, #ff9a56, #ff6b35);
+}
+
+.status-checkedin {
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+}
+
+.status-completed {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.status-cancelled {
+  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+}
+
+.status-icon {
+  font-size: 80rpx;
+}
+
+.status-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-top: 10rpx;
+}
+
+.current-time {
+  font-size: 26rpx;
+  margin-top: 20rpx;
+  opacity: 0.9;
+  font-family: monospace;
+}
+
+.detail-card {
+  padding: 30rpx;
+}
+
+.detail-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 24rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  font-size: 28rpx;
+}
+
+.detail-label {
+  color: #666;
+}
+
+.detail-value {
+  color: #333;
+  font-weight: 500;
+}
+
+.actions {
+  margin-top: 40rpx;
+}
+
+.action-btn {
+  padding: 28rpx;
+  border-radius: 40rpx;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.btn-large {
+  background: linear-gradient(135deg, #4A90D9, #357ABD);
+  color: #fff;
+  font-weight: bold;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #4A90D9;
+  border: 2rpx solid #4A90D9;
+}
+
+.btn-danger-ghost {
+  color: #ff6b6b;
+}
+
+.tip-text {
+  text-align: center;
+  color: #999;
+  font-size: 26rpx;
+  padding: 40rpx;
+}
+
+.tip-small {
+  text-align: center;
+  color: #ff9a56;
+  font-size: 24rpx;
+  margin-top: 10rpx;
+}
+
+.btn-warning {
+  background: #ff9a56 !important;
+}
+
+.tip-warning {
+  text-align: center;
+  color: #ff6b35;
+  font-size: 26rpx;
+  margin-top: 16rpx;
+  padding: 12rpx 20rpx;
+  background: #fff5eb;
+  border-radius: 8rpx;
+}
+
+/* 超时/未到：大号警告卡 */
+.tip-warning-big {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32rpx;
+  background: #fff4e5;
+  border: 2rpx solid #ffb347;
+  border-radius: 16rpx;
+  gap: 12rpx;
+}
+
+.warning-icon {
+  font-size: 48rpx;
+}
+
+.warning-text {
+  font-size: 28rpx;
+  color: #d4621a;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* 禁用按钮 */
+.btn-disabled {
+  background: #ccc !important;
+  color: #fff;
+  pointer-events: none;
+}
+
+/* 高亮取消预约（红色实心） */
+.btn-danger {
+  background: #ff6b6b !important;
+  color: #fff;
+}

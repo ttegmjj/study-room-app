@@ -1,0 +1,210 @@
+/* pages/admin/room-edit/room-edit.wxss */
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+}
+
+.form-input {
+  background: #f5f6fa;
+  padding: 24rpx;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+}
+
+.form-textarea {
+  background: #f5f6fa;
+  padding: 24rpx;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  width: 100%;
+  min-height: 160rpx;
+  box-sizing: border-box;
+}
+
+.form-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.form-item-half {
+  flex: 1;
+}
+
+.form-picker {
+  background: #f5f6fa;
+  padding: 24rpx;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.submit-btn {
+  margin-top: 40rpx;
+  padding: 28rpx;
+  text-align: center;
+}
+
+/* 签到小程序码 */
+.qr-title {
+  font-size: 29rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.qr-tip {
+  margin-top: 10rpx;
+  font-size: 23rpx;
+  color: #8a97a8;
+  line-height: 1.5;
+}
+
+.qr-preview {
+  margin-top: 24rpx;
+  text-align: center;
+}
+
+.qr-img {
+  width: 380rpx;
+  height: 380rpx;
+  border-radius: 12rpx;
+  background: #f5f6fa;
+}
+
+.qr-empty {
+  margin-top: 24rpx;
+  padding: 40rpx 0;
+  text-align: center;
+  font-size: 25rpx;
+  color: #b0b8c4;
+  background: #f8f9fb;
+  border-radius: 12rpx;
+}
+
+.qr-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 24rpx;
+}
+
+.qr-btn {
+  flex: 1;
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #4A90D9;
+  border: 2rpx solid #cfe0f2;
+  border-radius: 30rpx;
+  background: #fff;
+}
+
+.qr-btn-primary {
+  color: #fff;
+  background: #4A90D9;
+  border-color: #4A90D9;
+}
+
+.qr-scan-code {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #888;
+  font-family: monospace;
+}
+
+.qr-note {
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: #999;
+  text-align: center;
+}
+
+/* 座位标签管理 */
+.form-hint {
+  font-size: 22rpx;
+  color: #999;
+  margin-bottom: 16rpx;
+}
+
+.seat-tags-list {
+  margin-top: 4rpx;
+}
+
+/* 常用预设标签（一键添加） */
+.preset-tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+  padding: 14rpx;
+  background: #f5fbf8;
+  border-radius: 12rpx;
+  border: 2rpx dashed #c4e8d4;
+}
+.preset-tag-btn {
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  color: #2a8b5e;
+  border: 2rpx solid #c4e8d4;
+  line-height: 1.4;
+}
+.preset-tag-btn:active {
+  background: #e8f7ef;
+}
+
+/* 自习室标签预设：蓝色系（跟座位标签的绿色系区分） */
+.preset-tag-btn-blue {
+  color: #4A6DB5;
+  border-color: #c4d6f0;
+}
+.preset-tag-btn-blue:active {
+  background: #e8effc;
+}
+
+.seat-tag-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14rpx;
+}
+
+.seat-tag-input {
+  flex: 1;
+}
+
+.seat-tag-del {
+  width: 56rpx;
+  height: 56rpx;
+  line-height: 50rpx;
+  text-align: center;
+  font-size: 38rpx;
+  color: #ccc;
+  margin-left: 14rpx;
+  border-radius: 28rpx;
+  background: #f5f6fa;
+}
+
+.seat-tags-empty {
+  font-size: 24rpx;
+  color: #b0b8c4;
+  padding: 20rpx;
+  text-align: center;
+  background: #fafbfc;
+  border-radius: 10rpx;
+  margin-bottom: 14rpx;
+}
+
+.seat-tag-add {
+  font-size: 26rpx;
+  color: #4A90D9;
+  padding: 20rpx;
+  text-align: center;
+  border: 2rpx dashed #cfe0f2;
+  border-radius: 10rpx;
+  background: #fafcff;
+}

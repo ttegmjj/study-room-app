@@ -1,0 +1,134 @@
+<!-- pages/admin/seats/seats.wxml -->
+<view class="container">
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <!-- 未指定自习室（从管理菜单直接进入）：先选自习室 -->
+  <block wx:elif="{{!roomId}}">
+    <view class="card">
+      <view class="picker-title">请选择要管理座位的自习室</view>
+      <view
+        wx:for="{{rooms}}"
+        wx:key="_id"
+        class="picker-item"
+        bindtap="pickRoom"
+        data-id="{{item._id}}"
+        data-name="{{item.name}}"
+      >
+        <view>
+          <view class="picker-name">{{item.name}}</view>
+          <view class="picker-loc">{{item.location}}</view>
+        </view>
+        <view class="picker-arrow">›</view>
+      </view>
+      <view wx:if="{{rooms.length === 0}}" class="picker-empty">暂无自习室，请先在「自习室」里创建</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- 顶部信息 -->
+    <view class="card info-bar">
+      <view class="info-bar-top">
+        <view>当前共 <text class="highlight">{{seats.length}}</text> 个座位</view>
+        <view wx:if="{{occupyMode}}" class="occupy-mode-hint">📌 点击座位切换现场占用</view>
+      </view>
+      <view class="info-actions">
+        <!-- 现场占用模式开关（非布局模式下显示） -->
+        <block wx:if="{{!layoutMode}}">
+          <view class="occupy-switch-wrap">
+            <text class="occupy-switch-label">现场占用</text>
+            <switch checked="{{occupyMode}}" bindchange="toggleOccupyMode" color="#E74C3C" />
+          </view>
+          <view wx:if="{{occupyMode}}" class="info-btn" bindtap="batchReleaseAllOccupy">批量释放</view>
+        </block>
+        <block wx:if="{{!layoutMode && !occupyMode}}">
+          <view class="info-btn" bindtap="recognizeByPhoto">📷 拍照识别</view>
+          <view class="info-btn" bindtap="showAdd">➕ 批量添加</view>
+          <view wx:if="{{seats.length > 0}}" class="info-btn" bindtap="enterLayout">🧩 调整间隔</view>
+          <view wx:if="{{seats.length > 0}}" class="info-btn danger" bindtap="clearAll">🗑️ 清空</view>
+        </block>
+        <block wx:if="{{layoutMode}}">
+          <view class="info-btn" bindtap="saveLayout">💾 保存布局</view>
+          <view class="info-btn danger" bindtap="cancelLayout">取消</view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 座位展示 -->
+    <block wx:if="{{seatGroups.length > 0}}">
+      <view wx:for="{{seatGroups}}" wx:key="row" wx:for-item="group" class="card seat-card">
+        <!-- 排间过道（上一排和这排之间的大间隙） -->
+        <view wx:if="{{group.gapBefore}}" class="admin-row-gap">
+          <text class="admin-row-gap-text">— 过 道 —</text>
+        </view>
+        <!-- 排标题：布局模式下可点击切换排间过道 -->
+        <view
+          class="group-title {{layoutMode ? 'group-title-editing' : ''}} {{group.gapBefore ? 'group-title-with-gap' : ''}}"
+          bindtap="{{layoutMode ? 'onRowTap' : ''}}"
+          data-row="{{group.row}}"
+        >
+          <text>{{group.row}} 排（共 {{group.seats.length}} 个）</text>
+          <text wx:if="{{layoutMode && group.gapBefore}}" class="gap-indicator">· 前有过道（点击取消）</text>
+          <text wx:elif="{{layoutMode}}" class="gap-indicator gap-add">· 点击设排间过道</text>
+          <text wx:if="{{occupyMode}}" class="occupy-legend">· 红色 = 现场有人</text>
+        </view>
+        <view class="seat-grid">
+          <block wx:for="{{group.seats}}" wx:key="id" wx:for-item="seat">
+            <view
+              class="admin-seat
+                {{layoutMode ? 'seat-editing' : ''}}
+                {{seat.gapAfter ? 'seat-gap-after' : ''}}
+                {{seat.booked && !seat.occupy ? 'seat-booked-admin' : ''}}
+                {{seat.occupy ? 'seat-occupy-admin' : ''}}"
+              bindtap="onAdminSeatTap"
+              bindlongpress="onAdminSeatLongpress"
+              data-id="{{seat.id}}"
+              data-code="{{seat.code}}"
+            >
+              <view class="seat-code">{{seat.code}}</view>
+              <view wx:if="{{seat.booked && !seat.occupy}}" class="seat-badge booked-badge">约</view>
+              <view wx:if="{{seat.occupy}}" class="seat-badge occupy-badge">现场</view>
+              <view wx:if="{{layoutMode && seat.gapAfter}}" class="seat-gap-tag">过道</view>
+            </view>
+            <view wx:if="{{seat.gapAfter && !layoutMode}}" class="gap-marker"></view>
+          </block>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="empty">
+      <view class="empty-icon">🪑</view>
+      <view>还没有座位，点击上方「批量添加」开始</view>
+    </view>
+
+    <view wx:if="{{seatGroups.length > 0 && !layoutMode}}" class="tip">💡 长按座位删除；「调整间隔」可设置过道与连座</view>
+    <view wx:if="{{layoutMode}}" class="tip tip-editing">🧩 布局模式：点击座位切换它右方的过道（橙色「过道」标记）；点击排标题切换排间过道。完成后点「保存布局」</view>
+  </block>
+
+  <!-- 批量添加弹窗 -->
+  <view wx:if="{{showAddModal}}" class="modal-mask" bindtap="closeAdd">
+    <view class="modal" catchtap="noop">
+      <view class="modal-title">批量添加座位</view>
+
+      <view class="form-item">
+        <view class="form-label">排号（逗号分隔或区间）</view>
+        <input class="form-input" value="{{addForm.rows}}" data-field="rows" bindinput="onAddInput" placeholder="如：A,B,C,D 或 A-F" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">每排座位数</view>
+        <input class="form-input" type="number" value="{{addForm.colsPerRow}}" data-field="colsPerRow" bindinput="onAddInput" placeholder="如：3" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">起始序号</view>
+        <input class="form-input" type="number" value="{{addForm.startNum}}" data-field="startNum" bindinput="onAddInput" placeholder="如：1" />
+      </view>
+
+      <view class="modal-actions">
+        <view class="modal-btn cancel" bindtap="closeAdd">取消</view>
+        <view class="modal-btn confirm" bindtap="batchAdd">确认添加</view>
+      </view>
+    </view>
+  </view>
+</view>

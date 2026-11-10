@@ -1,0 +1,276 @@
+<!-- pages/booking/booking.wxml -->
+<view class="container">
+
+  <!-- 自习室信息 -->
+  <view class="card room-info-card">
+    <view class="room-title">{{roomName}}</view>
+    <view class="room-time">🕐 营业时间：{{openTime}} - {{closeTime}}</view>
+  </view>
+
+  <!-- 日期选择（日历网格：可选范围内正常，其余灰色） -->
+  <view class="card">
+    <view class="section-title">📅 选择日期</view>
+    <view class="cal-header">
+      <view class="cal-week" wx:for="{{weekHeader}}" wx:key="*this">{{item}}</view>
+    </view>
+    <view class="cal-grid">
+      <view
+        wx:for="{{calendarDays}}"
+        wx:key="dateStr"
+        class="cal-day
+          {{item.selectable ? '' : 'cal-disabled'}}
+          {{item.selected ? 'cal-selected' : ''}}
+          {{item.isToday && !item.selected ? 'cal-today' : ''}}"
+        data-date="{{item.dateStr}}"
+        data-selectable="{{item.selectable}}"
+        bindtap="onCalendarTap"
+      >
+        {{item.day}}
+      </view>
+    </view>
+    <view class="cal-hint">仅可预约今天起 7 天内，灰色日期不可选</view>
+  </view>
+
+  <!-- 座位选择（点击座位弹出时间段选择） -->
+  <view class="card">
+    <view class="section-title">🪑 选择座位</view>
+    <view class="time-hint" style="margin-bottom: 20rpx;">点击座位，在弹出的小方格中选择时间段</view>
+
+    <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+    <view wx:else class="seat-map">
+      <view class="legend">
+        <view class="legend-item">
+          <view class="legend-box available"></view>
+          <text>空闲</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-box booked"></view>
+          <text>有约</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-box selected"></view>
+          <text>已选</text>
+        </view>
+      </view>
+
+      <!-- 教室实景底图（管理端拍照识别座位时保存的原图） -->
+      <block wx:if="{{layoutImage}}">
+        <view class="layout-photo-toggle" bindtap="toggleLayoutImage">
+          {{showLayoutImage ? '收起教室实景图 ▲' : '查看教室实景图 ▼'}}
+        </view>
+        <image
+          wx:if="{{showLayoutImage}}"
+          class="layout-photo"
+          src="{{layoutImage}}"
+          mode="widthFix"
+          bindtap="toggleLayoutImage"
+        />
+      </block>
+
+      <!-- 教室俯视图 -->
+      <view wx:if="{{seats.length > 0}}" class="classroom">
+        <view class="room-top">
+          <text class="blackboard">讲 台 · 黑 板</text>
+        </view>
+
+        <view class="room-body">
+          <view class="room-wall left">
+            <text class="wall-label">窗</text>
+          </view>
+          <view class="room-seats">
+            <view class="seat-row" wx:for="{{seats}}" wx:key="row" wx:for-item="group">
+              <view wx:if="{{group.gapBefore}}" class="row-gap-before"></view>
+              <view class="row-label">{{group.row}}</view>
+              <view class="row-seats">
+                <block wx:for="{{group.seats}}" wx:key="id">
+                  <view
+                    class="seat
+                      {{item.booked ? 'seat-booked' : ''}}
+                      {{selectedSeat && selectedSeat.id === item.id ? 'seat-selected' : ''}}"
+                    bindtap="selectSeat"
+                    bindlongpress="longPressSeat"
+                    data-seatid="{{item.id}}"
+                    data-seatcode="{{item.code}}"
+                  >
+                    {{item.code}}
+                    <text class="seat-fav-badge" wx:if="{{item._favorite}}">⭐</text>
+                    <text wx:if="{{item.occupy}}" class="seat-occupy-badge">现场</text>
+                    <text wx:elif="{{item.booked}}" class="seat-booked-badge">有约</text>
+                  </view>
+                  <view wx:if="{{item.gapAfter}}" class="seat-gap">
+                    <text class="seat-gap-label">过道</text>
+                  </view>
+                </block>
+              </view>
+            </view>
+          </view>
+          <view class="room-wall right">
+            <text class="wall-label">窗</text>
+          </view>
+        </view>
+
+        <!-- 底部墙 + 出入口 -->
+        <view class="room-bottom">
+          <view class="wall-seg"></view>
+          <view class="door">
+            <text class="door-icon">🚪</text>
+            <text class="door-text">出入口</text>
+          </view>
+          <view class="wall-seg"></view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{seats.length === 0 && !loading}}" class="empty-hint">该自习室暂无座位</view>
+  </view>
+
+  <!-- 时间段长条弹窗（点击座位弹出） -->
+  <view wx:if="{{showTimeModal}}" class="modal-mask" bindtap="closeTimeModal">
+    <view class="time-modal strip-modal" catchtap="noop">
+      <view class="modal-title">
+        🪑 {{selectedSeat.code}} 号座位 · {{selectedDate}}
+      </view>
+      <view class="modal-sub">营业时间 {{openTime}} - {{closeTime}}，点击长条选择开始，再点一次选结束；已被预约/已过去的时段会自动跳过</view>
+
+      <view class="modal-legend">
+        <view class="legend-item">
+          <view class="legend-box slot-free"></view>
+          <text>空闲</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-box slot-booked-box"></view>
+          <text>已约</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-box slot-past-box"></view>
+          <text>已过</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-box slot-chosen-box"></view>
+          <text>已选</text>
+        </view>
+      </view>
+
+      <view wx:if="{{modalLoading}}" class="loading">加载中...</view>
+
+      <view wx:elif="{{!stripHasAvailable}}" class="strip-empty">
+        <view class="strip-empty-icon">📭</view>
+        <view>今日该座位已无可预约时段</view>
+        <view class="strip-empty-hint">请选择其他座位或日期</view>
+      </view>
+
+      <view wx:elif="{{hourSlots.length > 0}}" class="time-strip-wrap">
+        <!-- 顶部小时刻度（细线从这里往下） -->
+        <view class="time-strip-ticks">
+          <view
+            wx:for="{{stripTicks}}"
+            wx:key="label"
+            class="time-strip-tick"
+            style="left: {{item.pct}}%;"
+          >{{item.label}}</view>
+        </view>
+
+        <!-- 时间条主体 -->
+        <view
+          class="time-strip time-strip-body"
+          bindtouchstart="onStripTouchStart"
+          catchtouchmove="onStripTouchMove"
+          bindtouchend="onStripTouchEnd"
+          bindtouchcancel="onStripTouchEnd"
+        >
+          <!-- 底色细线 -->
+          <view class="strip-track"></view>
+
+          <!-- 已约/已过遮罩薄层 -->
+          <view class="strip-masks">
+            <view
+              wx:for="{{hourSlots}}"
+              wx:key="index"
+              class="strip-mask
+                {{item.booked ? 'mask-booked' : ''}}
+                {{item.past && !item.booked ? 'mask-past' : ''}}"
+              style="width: {{stripSegWidthPct}}%;"
+            ></view>
+          </view>
+
+          <!-- 选中区间高亮线（浮在上面） -->
+          <view
+            wx:if="{{selStartIdx >= 0 && selEndIdx >= 0}}"
+            class="strip-selected-line"
+            style="left: {{selStartPct}}%; width: {{selEndPct - selStartPct}}%;"
+          ></view>
+
+          <!-- 起点滑块 + 上方时间气泡 -->
+          <view class="strip-thumb strip-thumb-start" style="left: {{thumbStartPct}}%;">
+            <view wx:if="{{thumbStartLabel}}" class="thumb-bubble thumb-bubble-start {{bubbleFeedback === 'start' ? 'bubble-shake bubble-warn' : ''}}">{{thumbStartLabel}}</view>
+            <view class="thumb-dot"></view>
+          </view>
+
+          <!-- 终点滑块 + 上方时间气泡 -->
+          <view class="strip-thumb strip-thumb-end" style="left: {{thumbEndPct}}%;">
+            <view wx:if="{{thumbEndLabel}}" class="thumb-bubble thumb-bubble-end {{bubbleFeedback === 'end' ? 'bubble-shake bubble-warn' : ''}}">{{thumbEndLabel}}</view>
+            <view class="thumb-dot"></view>
+          </view>
+        </view>
+      </view>
+
+      <view class="modal-sel {{selRangeText ? '' : 'modal-sel-empty'}}">
+        {{selRangeText || '点击长条选择时段（每格 30 分钟）'}}
+      </view>
+
+      <view class="modal-btns">
+        <view class="modal-btn modal-btn-cancel" bindtap="closeTimeModal">取消</view>
+        <view class="modal-btn modal-btn-ok" bindtap="confirmTimeSel">确定</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- t5: 批量连续预约开关（选中座位和时段后显示） -->
+  <view wx:if="{{selectedSeat && selectedStartTime}}" class="batch-switch-card">
+    <view class="batch-switch-left">
+      <text class="batch-switch-icon">📅</text>
+      <view class="batch-switch-text">
+        <view class="batch-switch-title">连续预约未来 {{batchDays}} 天同时段</view>
+        <view class="batch-switch-sub">每天自动创建预约，冲突日期自动跳过</view>
+      </view>
+    </view>
+    <switch checked="{{showBatchSwitch}}" bindchange="toggleBatchSwitch" color="#4A90D9" />
+  </view>
+
+  <!-- ✨ AI 智能推荐座位 -->
+  <view class="ai-card">
+    <view class="ai-head">
+      <text class="ai-title">🤖 AI 智能推荐</text>
+      <text class="ai-btn {{aiLoading ? 'ai-btn-loading' : ''}}" bindtap="askAIRecommend">
+        {{aiLoading ? '分析中...' : '✨ 让 AI 推荐'}}
+      </text>
+    </view>
+    <view class="ai-body" wx:if="{{aiLoading}}">
+      <text>🤔 AI 小自正在分析本自习室的空座分布和你的历史偏好...</text>
+    </view>
+    <view class="ai-body" wx:elif="{{aiRecommend}}">
+      <text>{{aiRecommend}}</text>
+    </view>
+    <view class="ai-body ai-empty" wx:else>
+      <text>选好时段后点「✨ 让 AI 推荐」，我来帮你挑个好座位～</text>
+    </view>
+  </view>
+
+  <!-- 确认按钮 -->
+  <view class="bottom-bar">
+    <view class="selected-info">
+      <view wx:if="{{selectedStartTime && selectedEndTime}}" class="info-line">
+        时间：<text class="highlight">{{selectedStartTime}} - {{selectedEndTime}}</text>
+      </view>
+      <view wx:else class="info-line">请选择时间</view>
+      <view wx:if="{{selectedSeat}}" class="info-line">
+        座位：<text class="highlight">{{selectedSeat.code}}</text>
+      </view>
+    </view>
+    <view class="btn-confirm" bindtap="confirmBooking" hover-class="btn-confirm-hover">
+      确认预约
+    </view>
+  </view>
+
+</view>

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "openapi": [
+      "subscribeMessage.send",
+      "wxacode.getUnlimited",
+      "security.msgSecCheck",
+      "security.imgSecCheck"
+    ]
+  },
+  "triggers": [
+    {
+      "name": "autoCancelTimer",
+      "type": "timer",
+      "config": "0 * * * * * *"
+    }
+  ]
+}

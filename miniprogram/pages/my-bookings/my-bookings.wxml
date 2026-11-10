@@ -1,0 +1,97 @@
+<!-- pages/my-bookings/my-bookings.wxml -->
+<view wx:if="{{wallpaper && wallpaper.hasWallpaper}}" class="wallpaper">
+  <image wx:if="{{wallpaper.isCustom || wallpaper.isImage}}" class="wallpaper-image" src="{{wallpaper.imageSrc}}" mode="aspectFill" />
+  <view wx:else class="wallpaper-gradient" style="{{wallpaper.bgStyle}}"></view>
+  <view class="wallpaper-overlay" style="{{wallpaper.overlayStyle}}"></view>
+</view>
+
+<view class="container">
+
+  <!-- 筛选 Tabs -->
+  <scroll-view scroll-x class="tab-bar">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="value"
+      class="tab-item {{filterStatus === item.value ? 'tab-active' : ''}}"
+      bindtap="switchTab"
+      data-value="{{item.value}}"
+    >
+      {{item.label}}
+    </view>
+  </scroll-view>
+
+  <!-- 可删除记录提示 + 一键清理 -->
+  <view wx:if="{{deletableCount > 0}}" class="clean-bar">
+    <text class="clean-text">有 {{deletableCount}} 条记录可删除（已取消或昨天及更早）</text>
+    <view class="clean-btn" bindtap="deleteAllDeletable">一键清理</view>
+  </view>
+
+  <!-- 预约列表 -->
+  <block wx:if="{{!loading}}">
+    <block wx:if="{{bookings.length > 0}}">
+      <view
+        wx:for="{{bookings}}"
+        wx:key="_id"
+        class="card booking-card"
+      >
+        <view class="booking-top flex-between">
+          <view class="booking-room ellipsis">{{item.roomName}}</view>
+          <view class="tag {{item.statusInfo.tagClass}}">{{item.statusInfo.text}}</view>
+        </view>
+
+        <view class="booking-info">
+          <view class="info-row">
+            <text class="info-icon">📅</text>
+            <text class="info-text">{{item.dateLabel}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-icon">⏰</text>
+            <text class="info-text">{{item.startTime}} - {{item.endTime}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-icon">🪑</text>
+            <text class="info-text">座位 {{item.seatCode}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{item.checkInTimeStr}}" class="check-time">
+          <text>签到：{{item.checkInTimeStr}}</text>
+        </view>
+        <view wx:if="{{item.checkOutTimeStr}}" class="check-time">
+          <text>签退：{{item.checkOutTimeStr}}</text>
+        </view>
+
+        <view wx:if="{{item.status === 'cancelled' && item.cancelReason}}" class="cancel-reason">{{item.cancelReason}}</view>
+
+        <view class="divider"></view>
+
+        <view class="booking-actions flex-between">
+          <!-- 待签到：显示签到和取消 -->
+          <block wx:if="{{item.status === 'booked'}}">
+            <view class="btn-ghost" bindtap="cancelBooking" data-id="{{item._id}}">取消预约</view>
+            <view class="btn-primary-sm" bindtap="goToCheckin" data-id="{{item._id}}">去签到</view>
+          </block>
+
+          <!-- 已签到：显示签退 -->
+          <block wx:elif="{{item.status === 'checkedin'}}">
+            <view></view>
+            <view class="btn-primary-sm" bindtap="goToCheckin" data-id="{{item._id}}">去签退</view>
+          </block>
+
+          <view wx:else class="flex-between">
+            <view class="more-btn" bindtap="goToCheckin" data-id="{{item._id}}">查看详情 →</view>
+            <view wx:if="{{item.canDelete}}" class="btn-delete" catchtap="deleteBooking" data-id="{{item._id}}">🗑 删除记录</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="empty">
+      <view class="empty-icon">📝</view>
+      <view>暂无预约记录</view>
+      <view class="empty-btn" bindtap="goToIndex">去预约座位</view>
+    </view>
+  </block>
+
+  <view wx:else class="loading">加载中...</view>
+</view>

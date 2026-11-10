@@ -1,0 +1,68 @@
+/* pages/admin/rooms/rooms.wxss */
+
+.room-top {
+  margin-bottom: 10rpx;
+}
+
+.room-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  max-width: 350rpx;
+}
+
+.room-loc {
+  font-size: 22rpx;
+  color: #4A90D9;
+  background: #e8f0fe;
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
+}
+
+.room-desc {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.room-meta {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.ml-20 {
+  margin-left: 20rpx;
+}
+
+.room-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.act-btn {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx;
+  background: #f5f6fa;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: #333;
+}
+
+.act-danger {
+  color: #ff6b6b;
+}
+
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 100rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: linear-gradient(135deg, #4A90D9, #357ABD);
+  color: #fff;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 100rpx;
+  font-size: 56rpx;
+  box-shadow: 0 8rpx 24rpx rgba(74, 144, 217, 0.4);
+}

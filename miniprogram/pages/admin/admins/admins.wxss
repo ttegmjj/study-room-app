@@ -1,0 +1,161 @@
+/* pages/admin/admins/admins.wxss */
+
+.tip-card {
+  padding-bottom: 24rpx;
+}
+
+.tip-title {
+  font-size: 29rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.tip-text {
+  font-size: 23rpx;
+  color: #8a97a8;
+  line-height: 1.6;
+}
+
+.search-card {
+  padding-bottom: 20rpx;
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.search-input {
+  flex: 1;
+  height: 68rpx;
+  padding: 0 24rpx;
+  background: #f5f6fa;
+  border-radius: 34rpx;
+  font-size: 26rpx;
+}
+
+.search-btn {
+  padding: 14rpx 30rpx;
+  background: #4A90D9;
+  color: #fff;
+  font-size: 25rpx;
+  border-radius: 30rpx;
+}
+
+.clear-btn {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.count-hint {
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: #a2acb9;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+}
+
+.user-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-avatar {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  background: #eef3fa;
+  flex-shrink: 0;
+}
+
+.avatar-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  color: #4A90D9;
+  font-weight: bold;
+}
+
+.user-info {
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.tag {
+  display: inline-block;
+  margin-left: 10rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 19rpx;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+.tag-self {
+  background: #eef3fa;
+  color: #4A90D9;
+}
+
+.tag-admin {
+  background: #fff4e5;
+  color: #e08a00;
+}
+
+.user-openid {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: #b0b8c4;
+}
+
+.user-ops {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
+.op-ban {
+  margin-right: 10rpx;
+  color: #a9761c;
+  background: #fff8ec;
+  border: 2rpx solid #ffe2b8;
+}
+
+.tag-ban {
+  background: #fdecec;
+  color: #d1604b;
+}
+
+.op-btn {
+  flex-shrink: 0;
+  padding: 12rpx 20rpx;
+  border-radius: 28rpx;
+  font-size: 23rpx;
+}
+
+.op-add {
+  color: #fff;
+  background: #4A90D9;
+}
+
+.op-cancel {
+  color: #e6704f;
+  border: 2rpx solid #f2c9be;
+  background: #fff;
+}

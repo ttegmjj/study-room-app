@@ -1,0 +1,14 @@
+{
+  "name": "study-room-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "自习室预约小程序",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

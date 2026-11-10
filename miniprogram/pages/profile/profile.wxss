@@ -1,0 +1,417 @@
+/* pages/profile/profile.wxss */
+
+/* ========== 登录相关 ========== */
+
+.profile-header.logged-out {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.avatar-default {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx solid rgba(255, 255, 255, 0.5);
+}
+
+.avatar-emoji {
+  font-size: 60rpx;
+}
+
+.user-sub {
+  font-size: 24rpx;
+  opacity: 0.85;
+  margin-top: 8rpx;
+}
+
+.login-card {
+  padding: 40rpx 30rpx;
+  text-align: center;
+}
+
+.login-tip {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 14rpx;
+}
+
+.login-tip-desc {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.7;
+  margin-bottom: 30rpx;
+  text-align: left;
+  padding: 20rpx;
+  background: #f8f9fb;
+  border-radius: 12rpx;
+}
+
+.login-btn {
+  background: linear-gradient(135deg, #4A90D9, #357ABD);
+  color: #fff;
+  padding: 26rpx;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  box-shadow: 0 6rpx 20rpx rgba(74, 144, 217, 0.35);
+}
+
+.logout-wrap {
+  margin: 40rpx 0 20rpx;
+}
+
+.logout-btn {
+  background: #fff;
+  color: #ff6b6b;
+  text-align: center;
+  padding: 26rpx;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+  border: 2rpx solid #ff6b6b;
+}
+
+/* ========== 原有样式 ========== */
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 40rpx 30rpx;
+  background: linear-gradient(135deg, #4A90D9, #357ABD);
+  border-radius: 20rpx;
+  color: #fff;
+  margin-bottom: 30rpx;
+}
+
+.avatar-wrap {
+  position: relative;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.5);
+  background: #fff;
+}
+
+.avatar-edit {
+  position: absolute;
+  bottom: -4rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+}
+
+.user-detail {
+  margin-left: 30rpx;
+}
+
+.user-name {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.user-tag {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  margin-top: 10rpx;
+}
+
+.stats-card {
+  display: flex;
+  align-items: center;
+  padding: 40rpx;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-num {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #4A90D9;
+}
+
+.stat-unit {
+  font-size: 22rpx;
+  font-weight: normal;
+  margin-left: 2rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.stat-divider {
+  width: 2rpx;
+  height: 60rpx;
+  background: #eee;
+}
+
+.menu-card {
+  padding: 0 30rpx;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+}
+
+.menu-icon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
+}
+
+.menu-label {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.menu-disabled {
+  opacity: 0.6;
+}
+
+.menu-lock {
+  margin-right: 10rpx;
+  font-size: 26rpx;
+}
+
+
+.menu-arrow {
+  color: #ccc;
+  font-size: 32rpx;
+}
+
+.menu-divider {
+  height: 2rpx;
+  background: #f5f5f5;
+}
+
+.version {
+  text-align: center;
+  color: #ccc;
+  font-size: 22rpx;
+  padding: 40rpx;
+}
+
+/* ========== 头像占位 ========== */
+
+.avatar-placeholder {
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+}
+
+/* ========== 编辑资料弹窗 ========== */
+
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  width: 600rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  padding: 32rpx 0;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.modal-body {
+  padding: 40rpx 60rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32rpx;
+}
+
+.edit-avatar-btn {
+  width: 160rpx;
+  height: 160rpx;
+  padding: 0;
+  margin: 0;
+  background: #f5f5f5;
+  border-radius: 50%;
+  border: 2rpx solid #e0e0e0;
+  line-height: 160rpx;
+  overflow: hidden;
+}
+
+.edit-avatar-btn::after {
+  border: none;
+}
+
+.edit-avatar {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+}
+
+.edit-avatar-ph {
+  font-size: 22rpx;
+  color: #999;
+  text-align: center;
+  line-height: 160rpx;
+}
+
+.edit-nickname {
+  width: 100%;
+  height: 80rpx;
+  background: #f8f8f8;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.edit-placeholder {
+  color: #bbb;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 2rpx solid #f0f0f0;
+}
+
+.modal-btn {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 0;
+  font-size: 30rpx;
+}
+
+.modal-cancel {
+  color: #999;
+  border-right: 2rpx solid #f0f0f0;
+}
+
+.modal-confirm {
+  color: #4A90D9;
+  font-weight: 500;
+}
+
+/* 爽约 / 禁约提醒 */
+.ban-banner {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+  padding: 20rpx 24rpx;
+  background: #fff1f0;
+  border: 2rpx solid #ffd2cc;
+  border-radius: 16rpx;
+}
+.ban-emoji {
+  margin-right: 14rpx;
+  font-size: 32rpx;
+}
+.ban-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #c0392b;
+}
+.ban-sub {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  line-height: 1.5;
+  color: #b5695f;
+}
+.no-show-tip {
+  margin-bottom: 24rpx;
+  padding: 14rpx 20rpx;
+  background: #fff8ec;
+  border-radius: 14rpx;
+  font-size: 23rpx;
+  color: #a9761c;
+}
+
+/* ===== 图标图片化适配 ===== */
+.avatar-emoji-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.avatar-ph-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.stat-emoji-img {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+.card-icon {
+  width: 32rpx;
+  height: 32rpx;
+  vertical-align: middle;
+  margin-right: 6rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+.fav-seat-icon {
+  width: 32rpx;
+  height: 32rpx;
+  vertical-align: middle;
+  margin-right: 6rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+.login-tip-icon {
+  width: 30rpx;
+  height: 30rpx;
+  vertical-align: middle;
+  margin-right: 8rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+.menu-icon-img {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 20rpx;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+.menu-lock-img {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 10rpx;
+  border-radius: 6rpx;
+  overflow: hidden;
+}

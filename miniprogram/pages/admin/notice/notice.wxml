@@ -1,0 +1,50 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <block wx:else>
+    <view class="card">
+      <view class="row">
+        <view class="row-label">启用公告</view>
+        <switch checked="{{enabled}}" color="#4A90D9" bindchange="onToggle" />
+      </view>
+      <view class="hint">开启后，所有用户打开首页都能看到公告栏</view>
+    </view>
+
+    <view class="card">
+      <view class="field-label">标题</view>
+      <input
+        class="field-input"
+        placeholder="如：周末延时开放（选填）"
+        value="{{title}}"
+        maxlength="40"
+        bindinput="onTitleInput"
+      />
+
+      <view class="field-label">内容</view>
+      <textarea
+        class="field-textarea"
+        placeholder="如：本周六、周日闭馆时间延长至 23:00，请提前预约。"
+        value="{{content}}"
+        maxlength="500"
+        bindinput="onContentInput"
+      />
+      <view class="count">{{content.length}} / 500</view>
+    </view>
+
+    <view class="card preview">
+      <view class="preview-label">首页预览</view>
+      <view wx:if="{{enabled && content}}" class="notice-scroll">
+        <text class="notice-scroll-tag">📢</text>
+        <view class="notice-scroll-wrap">
+          <view class="notice-scroll-text">
+            <text class="notice-seg">{{title ? title + '：' : ''}}{{content}}</text><text class="notice-seg">{{title ? title + '：' : ''}}{{content}}</text><text class="notice-seg">{{title ? title + '：' : ''}}{{content}}</text><text class="notice-seg">{{title ? title + '：' : ''}}{{content}}</text><text class="notice-seg">{{title ? title + '：' : ''}}{{content}}</text>
+          </view>
+        </view>
+        <text class="notice-scroll-more">详情</text>
+      </view>
+      <view wx:else class="preview-empty">公告未启用或内容为空</view>
+    </view>
+
+    <button class="btn-save" loading="{{saving}}" bindtap="save">保存公告</button>
+  </block>
+</view>

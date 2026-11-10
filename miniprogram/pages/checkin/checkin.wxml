@@ -1,0 +1,100 @@
+<!-- pages/checkin/checkin.wxml -->
+<view class="container">
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <block wx:elif="{{booking}}">
+    <!-- 状态卡片 -->
+    <view class="status-card status-{{booking.status}}">
+      <view class="status-icon">
+        <text wx:if="{{booking.status === 'booked'}}">⏰</text>
+        <text wx:elif="{{booking.status === 'checkedin'}}">✅</text>
+        <text wx:elif="{{booking.status === 'completed'}}">🎉</text>
+        <text wx:elif="{{booking.status === 'cancelled'}}">❌</text>
+      </view>
+      <view class="status-text">{{statusText}}</view>
+      <view class="current-time">{{currentTime}}</view>
+    </view>
+
+    <!-- 预约详情 -->
+    <view class="card detail-card">
+      <view class="detail-title">{{booking.roomName}}</view>
+
+      <view class="detail-item">
+        <text class="detail-label">📅 日期</text>
+        <text class="detail-value">{{booking.date}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">⏰ 时间</text>
+        <text class="detail-value">{{booking.startTime}} - {{booking.endTime}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">🪑 座位</text>
+        <text class="detail-value">{{booking.seatCode}}</text>
+      </view>
+
+      <view wx:if="{{booking.checkInTimeStr}}" class="detail-item">
+        <text class="detail-label">✅ 签到时间</text>
+        <text class="detail-value">{{booking.checkInTimeStr}}</text>
+      </view>
+      <view wx:if="{{booking.checkOutTimeStr}}" class="detail-item">
+        <text class="detail-label">🚪 签退时间</text>
+        <text class="detail-value">{{booking.checkOutTimeStr}}</text>
+      </view>
+    </view>
+
+    <!-- 签到/签退按钮 -->
+    <view class="actions">
+      <block wx:if="{{booking.status === 'booked'}}">
+        <!-- 超时/未到时间：签到按钮禁用 + 警告 + 建议取消 -->
+        <block wx:if="{{!canCheckIn}}">
+          <view class="tip-warning-big">
+            <view class="warning-icon">⚠️</view>
+            <view class="warning-text">{{timeWarning}}</view>
+          </view>
+          <view class="action-btn btn-disabled mt-20">
+            ✅ 无法签到
+          </view>
+          <view class="action-btn btn-large btn-danger mt-20" bindtap="cancelBooking">
+            🗑️ 取消预约
+          </view>
+        </block>
+
+        <!-- 时间内正常签到 -->
+        <block wx:else>
+          <view class="action-btn btn-large" bindtap="doCheckIn">
+            ✅ 立即签到
+          </view>
+          <view class="action-btn btn-secondary mt-20" bindtap="getCheckinCode">
+            出示签到码
+          </view>
+          <view class="action-btn btn-danger-ghost mt-20" bindtap="cancelBooking">
+            取消预约
+          </view>
+        </block>
+      </block>
+
+      <block wx:elif="{{booking.status === 'checkedin'}}">
+        <view class="action-btn btn-large" bindtap="doCheckOut">
+          🚪 立即签退
+        </view>
+      </block>
+
+      <view wx:elif="{{booking.status === 'completed'}}" class="tip-text">
+        ✅ 预约已完成，期待下次光临
+      </view>
+
+      <view wx:elif="{{booking.status === 'cancelled'}}" class="tip-text">
+        ❌ 预约已取消
+      </view>
+
+      <view wx:else class="tip-text">
+        预约已结束，如有疑问请联系管理员
+      </view>
+    </view>
+  </block>
+
+  <view wx:elif="{{scanError}}" class="empty">{{scanError}}</view>
+
+  <view wx:else class="empty">预约记录不存在</view>
+</view>

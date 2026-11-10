@@ -1,0 +1,51 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/forum/forum",
+    "pages/forum/post-edit/post-edit",
+    "pages/forum/post-detail/post-detail",
+    "pages/booking/booking",
+    "pages/my-bookings/my-bookings",
+    "pages/checkin/checkin",
+    "pages/profile/profile",
+    "pages/profile/edit/edit",
+    "pages/admin/admin",
+    "pages/admin/rooms/rooms",
+    "pages/admin/room-edit/room-edit",
+    "pages/admin/seats/seats",
+    "pages/admin/bookings/bookings",
+    "pages/admin/stats/stats",
+    "pages/admin/appearance/appearance",
+    "pages/admin/notice/notice",
+    "pages/suggestion/suggestion",
+    "pages/admin/suggestions/suggestions",
+    "pages/admin/admins/admins",
+    "pages/ai-demo/ai-demo"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#4A90D9",
+    "navigationBarTitleText": "自习室预约",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999",
+    "selectedColor": "#4A90D9",
+    "backgroundColor": "#fff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "个人中心"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "cloud": true
+}

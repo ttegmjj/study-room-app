@@ -1,0 +1,89 @@
+<!-- pages/forum/post-detail/post-detail.wxml -->
+<view class="container detail-page">
+  <block wx:if="{{!loading && post}}">
+    <!-- 正文卡片 -->
+    <view class="card">
+      <view class="detail-head">
+        <image wx:if="{{post.authorAvatar}}" class="avatar" src="{{post.authorAvatar}}" mode="aspectFill" />
+        <view wx:else class="avatar avatar-ph">📘</view>
+        <view class="head-info">
+          <view class="author-name">{{post.authorName}}</view>
+          <view class="post-time">{{post.createdAtStr}}</view>
+        </view>
+        <view class="cat-badge">{{post.category}}</view>
+      </view>
+
+      <view class="detail-title">{{post.title}}</view>
+      <view class="detail-content">{{post.content}}</view>
+
+      <view wx:if="{{post.subject || post.studyTime || post.location}}" class="info-list">
+        <view wx:if="{{post.subject}}" class="info-line">
+          <text class="info-key">📖 科目</text>
+          <text class="info-val">{{post.subject}}</text>
+        </view>
+        <view wx:if="{{post.studyTime}}" class="info-line">
+          <text class="info-key">⏰ 学习时间</text>
+          <text class="info-val">{{post.studyTime}}</text>
+        </view>
+        <view wx:if="{{post.location}}" class="info-line">
+          <text class="info-key">📍 常来自习室</text>
+          <text class="info-val">{{post.location}}</text>
+        </view>
+      </view>
+
+      <view wx:if="{{post.contact}}" class="contact-box" bindtap="copyContact">
+        <view class="contact-left">
+          <view class="contact-label">联系方式</view>
+          <view class="contact-val">{{post.contact}}</view>
+        </view>
+        <view class="contact-copy">复制</view>
+      </view>
+
+      <view wx:if="{{post.canDelete}}" class="delete-btn" bindtap="deletePost">删除帖子</view>
+    </view>
+
+    <!-- 互动条 -->
+    <view class="card action-card">
+      <view class="action-item {{post.isLiked ? 'liked' : ''}}" bindtap="toggleLike">
+        {{post.isLiked ? '❤️ 已点赞' : '🤍 点赞'}} {{post.likeCount > 0 ? post.likeCount : ''}}
+      </view>
+      <view class="action-item">💬 {{post.commentCount}} 条评论</view>
+    </view>
+
+    <!-- 评论列表 -->
+    <view class="card">
+      <view class="card-title">全部评论（{{comments.length}}）</view>
+
+      <view wx:if="{{comments.length === 0}}" class="no-comment">还没有评论，来说两句吧～</view>
+
+      <view wx:for="{{comments}}" wx:key="_id" class="comment-item">
+        <image wx:if="{{item.authorAvatar}}" class="avatar small" src="{{item.authorAvatar}}" mode="aspectFill" />
+        <view wx:else class="avatar small avatar-ph">💬</view>
+        <view class="comment-body">
+          <view class="comment-head">
+            <text class="comment-name">{{item.authorName}}</text>
+            <text class="comment-time">{{item.timeAgo}}</text>
+          </view>
+          <view class="comment-text">{{item.content}}</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="loading">加载中...</view>
+
+  <!-- 底部评论输入栏 -->
+  <view class="comment-bar">
+    <input
+      class="comment-input"
+      placeholder="说点什么..."
+      placeholder-class="ph"
+      maxlength="200"
+      value="{{commentText}}"
+      bindinput="onCommentInput"
+      confirm-type="send"
+      bindconfirm="submitComment"
+    />
+    <view class="send-btn {{commentText ? 'send-active' : ''}}" bindtap="submitComment">发送</view>
+  </view>
+</view>

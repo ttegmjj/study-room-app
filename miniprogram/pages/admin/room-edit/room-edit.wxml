@@ -1,0 +1,121 @@
+<!-- pages/admin/room-edit/room-edit.wxml -->
+<view class="container">
+
+  <view class="card">
+    <view class="form-item">
+      <view class="form-label">自习室名称 *</view>
+      <input
+        class="form-input"
+        placeholder="如：图书馆一楼自习区"
+        value="{{form.name}}"
+        data-field="name"
+        bindinput="onInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">位置 *</view>
+      <input
+        class="form-input"
+        placeholder="如：图书馆 1F"
+        value="{{form.location}}"
+        data-field="location"
+        bindinput="onInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">描述</view>
+      <textarea
+        class="form-textarea"
+        placeholder="自习室简介"
+        value="{{form.description}}"
+        data-field="description"
+        bindinput="onInput"
+      />
+    </view>
+
+    <view class="form-row">
+      <view class="form-item form-item-half">
+        <view class="form-label">开门时间</view>
+        <picker mode="time" value="{{form.openTime}}" data-field="openTime" bindchange="onTimeChange">
+          <view class="form-picker">{{form.openTime}} ›</view>
+        </picker>
+      </view>
+      <view class="form-item form-item-half">
+        <view class="form-label">关门时间</view>
+        <picker mode="time" value="{{form.closeTime}}" data-field="closeTime" bindchange="onTimeChange">
+          <view class="form-picker">{{form.closeTime}} ›</view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- t1: 最短预约时长 -->
+    <view class="form-row">
+      <view class="form-item form-item-half">
+        <view class="form-label">最短预约时长</view>
+        <picker range="{{minMinutesOpts}}" value="{{minMinutesIndex}}" bindchange="onMinMinutesChange">
+          <view class="form-picker">{{form.minMinutes}} 分钟 ›</view>
+        </picker>
+      </view>
+      <!-- t6: 开放状态 -->
+      <view class="form-item form-item-half status-item">
+        <view class="form-label">{{form.status === 'open' ? '开放中' : form.status === 'closed' ? '已暂停' : '维护中'}}</view>
+        <switch checked="{{form.status === 'open'}}" bindchange="toggleStatusSwitch" color="#4A90D9" />
+      </view>
+    </view>
+
+    <!-- 自习室整体标签（显示在首页/列表卡片上） -->
+    <view class="form-item seat-tags-section">
+      <view class="form-label">自习室标签</view>
+      <view class="form-hint">显示在首页自习室卡片上，方便学生快速识别（如 📖考研自习室、🌙24小时开放）</view>
+      <!-- 常用预设标签按钮 -->
+      <view class="preset-tags-wrap" wx:if="{{form.roomTags.length < 6}}">
+        <view class="preset-tag-btn preset-tag-btn-blue"
+              wx:for="{{presetRoomTags}}" wx:key="*this"
+              data-val="{{item}}"
+              bindtap="addPresetRoomTag">{{item}}</view>
+      </view>
+      <view class="seat-tags-list">
+        <view class="seat-tag-row" wx:for="{{form.roomTags}}" wx:key="*this" wx:for-index="idx">
+          <input
+            class="form-input seat-tag-input"
+            placeholder="如：📖考研自习室"
+            value="{{item}}"
+            data-index="{{idx}}"
+            bindinput="onRoomTagInput"
+          />
+          <view class="seat-tag-del" data-index="{{idx}}" bindtap="removeRoomTag">×</view>
+        </view>
+        <view wx:if="{{form.roomTags.length === 0}}" class="seat-tags-empty">暂未添加标签，点击上方预设或下方新增</view>
+        <view wx:if="{{form.roomTags.length < 6}}" class="seat-tag-add" bindtap="addRoomTag">＋ 新增自习室标签</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 签到码（仅编辑已有自习室时可生成） -->
+  <view wx:if="{{isEdit}}" class="card qr-card">
+    <view class="qr-title">📷 自习室签到码</view>
+    <view class="qr-tip">打印张贴在自习室入口，学生扫码即可进入签到页定位自己的预约</view>
+
+    <!-- 隐藏 Canvas：前端在这上面画二维码 -->
+    <canvas canvas-id="qrcodeCanvas" style="position:fixed;left:-9999px;top:-9999px;width:220px;height:220px;"></canvas>
+
+    <view wx:if="{{qrTempFilePath || qrFileID}}" class="qr-preview">
+      <image class="qr-img" src="{{qrTempFilePath || qrFileID}}" mode="aspectFit" show-menu-by-longpress="{{true}}" />
+      <view wx:if="{{qrScanCode}}" class="qr-scan-code">编号：{{qrScanCode}}</view>
+    </view>
+    <view wx:else class="qr-empty">尚未生成签到码</view>
+
+    <view class="qr-actions">
+      <view class="qr-btn" bindtap="generateQr">{{qrTempFilePath || qrFileID ? '重新生成' : '生成签到码'}}</view>
+      <view wx:if="{{qrTempFilePath || qrFileID}}" class="qr-btn qr-btn-primary" bindtap="saveQr">保存到相册</view>
+    </view>
+
+    <view class="qr-note">💡 普通二维码：学生用微信「扫一扫」识别后会自动跳转签到页</view>
+  </view>
+
+  <view class="submit-btn btn-primary" bindtap="submit">
+    {{isEdit ? '保存修改' : '创建自习室'}}
+  </view>
+</view>

@@ -1,0 +1,170 @@
+/* pages/forum/forum.wxss */
+.forum-page {
+  padding-bottom: 180rpx;
+}
+
+.forum-header {
+  padding: 10rpx 0 20rpx;
+}
+
+.forum-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.forum-sub {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+/* 分类滚动条 */
+.cat-scroll {
+  white-space: nowrap;
+  margin-bottom: 20rpx;
+}
+
+.cat-tabs {
+  display: flex;
+}
+
+.cat-tab {
+  flex-shrink: 0;
+  padding: 12rpx 28rpx;
+  margin-right: 16rpx;
+  border-radius: 30rpx;
+  background: #fff;
+  color: #666;
+  font-size: 26rpx;
+  border: 2rpx solid #eef0f4;
+}
+
+.cat-active {
+  background: #4A90D9;
+  color: #fff;
+  border-color: #4A90D9;
+}
+
+/* 帖子卡片 */
+.post-card {
+  padding: 24rpx 26rpx;
+}
+
+.post-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.avatar-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef4fb;
+  font-size: 36rpx;
+}
+
+.post-head-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.author-name {
+  font-size: 27rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.owner-tag {
+  display: inline-block;
+  margin-left: 10rpx;
+  padding: 0 10rpx;
+  font-size: 20rpx;
+  font-weight: normal;
+  color: #4A90D9;
+  background: #eef4fb;
+  border-radius: 6rpx;
+}
+
+.post-time {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.post-title {
+  font-size: 31rpx;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 10rpx;
+}
+
+.post-content {
+  font-size: 27rpx;
+  color: #555;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 14rpx;
+}
+
+.mini-tag {
+  font-size: 22rpx;
+  color: #4A90D9;
+  background: #f2f7fd;
+  border-radius: 8rpx;
+  padding: 4rpx 14rpx;
+  margin-right: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.post-foot {
+  display: flex;
+  align-items: center;
+  border-top: 1rpx solid #f0f2f5;
+  margin-top: 16rpx;
+  padding-top: 14rpx;
+}
+
+.foot-btn {
+  font-size: 24rpx;
+  color: #999;
+  margin-right: 40rpx;
+}
+
+.foot-btn.liked {
+  color: #ff6b6b;
+}
+
+/* 悬浮发布按钮 */
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: calc(140rpx + env(safe-area-inset-bottom));
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4A90D9, #357ABD);
+  color: #fff;
+  font-size: 56rpx;
+  line-height: 100rpx;
+  text-align: center;
+  box-shadow: 0 8rpx 20rpx rgba(74, 144, 217, 0.4);
+  z-index: 100;
+}

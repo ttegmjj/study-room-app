@@ -1,0 +1,63 @@
+<!-- pages/admin/bookings/bookings.wxml -->
+<view class="container">
+
+  <!-- 筛选 -->
+  <view class="filter-bar">
+    <picker mode="date" value="{{dateFilter}}" bindchange="onDateChange">
+      <view class="date-picker">
+        📅 {{dateFilter || '选择日期'}}
+        <text wx:if="{{dateFilter}}" class="clear-date" catchtap="clearDate">✕</text>
+      </view>
+    </picker>
+  </view>
+
+  <scroll-view scroll-x class="tab-bar">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="value"
+      class="tab-item {{statusFilter === item.value ? 'tab-active' : ''}}"
+      bindtap="switchTab"
+      data-value="{{item.value}}"
+    >
+      {{item.label}}
+    </view>
+  </scroll-view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+
+  <block wx:elif="{{bookings.length > 0}}">
+    <view wx:for="{{bookings}}" wx:key="_id" class="card booking-item">
+      <view class="booking-top flex-between">
+        <view class="room-name ellipsis">{{item.roomName}}</view>
+        <view class="tag {{item.statusInfo.tagClass}}">{{item.statusInfo.text}}</view>
+      </view>
+      <view class="booking-info">
+        <text>📅 {{item.date}}</text>
+        <text>⏰ {{item.startTime}} - {{item.endTime}}</text>
+        <text>🪑 {{item.seatCode}}</text>
+      </view>
+
+      <view wx:if="{{item.checkInTimeStr}}" class="time-line">✅ {{item.checkInTimeStr}}</view>
+      <view wx:if="{{item.checkOutTimeStr}}" class="time-line">🚪 {{item.checkOutTimeStr}}</view>
+
+      <!-- 状态切换 -->
+      <view class="status-switch">
+        <block wx:if="{{item.status === 'booked'}}">
+          <view class="switch-btn" bindtap="updateStatus" data-id="{{item._id}}" data-status="checkedin">✓ 标记签到</view>
+          <view class="switch-btn danger" bindtap="updateStatus" data-id="{{item._id}}" data-status="cancelled">✕ 取消</view>
+        </block>
+        <block wx:elif="{{item.status === 'checkedin'}}">
+          <view class="switch-btn" bindtap="updateStatus" data-id="{{item._id}}" data-status="completed">✓ 标记签退</view>
+        </block>
+        <block wx:elif="{{item.status === 'cancelled'}}">
+          <view class="switch-btn" bindtap="updateStatus" data-id="{{item._id}}" data-status="booked">恢复预约</view>
+        </block>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="empty">
+    <view class="empty-icon">📋</view>
+    <view>暂无预约记录</view>
+  </view>
+</view>

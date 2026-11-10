@@ -1,0 +1,67 @@
+/* pages/admin/suggestions/suggestions.wxss */
+
+.sg-item {
+  margin-bottom: 20rpx;
+}
+
+.sg-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.sg-user {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.sg-status {
+  font-size: 20rpx;
+  color: #e65100;
+  background: #fff3e0;
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+}
+
+.sg-status.sg-done {
+  color: #2e7d32;
+  background: #e8f5e9;
+}
+
+.sg-content {
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 12rpx;
+}
+
+.sg-foot {
+  display: flex;
+  gap: 24rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.sg-btn {
+  margin-top: 16rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #4A90D9;
+  background: #eef3fb;
+  border-radius: 30rpx;
+  padding: 12rpx 0;
+}
+
+.loading, .empty {
+  text-align: center;
+  color: #999;
+  font-size: 26rpx;
+  padding: 60rpx 0;
+}
+
+.empty-icon {
+  font-size: 60rpx;
+  margin-bottom: 16rpx;
+}

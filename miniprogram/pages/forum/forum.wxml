@@ -1,0 +1,86 @@
+<!-- pages/forum/forum.wxml -->
+<view wx:if="{{wallpaper && wallpaper.hasWallpaper}}" class="wallpaper">
+  <image wx:if="{{wallpaper.isCustom || wallpaper.isImage}}" class="wallpaper-image" src="{{wallpaper.imageSrc}}" mode="aspectFill" />
+  <view wx:else class="wallpaper-gradient" style="{{wallpaper.bgStyle}}"></view>
+  <view class="wallpaper-overlay" style="{{wallpaper.overlayStyle}}"></view>
+</view>
+
+<view class="container forum-page">
+  <!-- 头部 -->
+  <view class="forum-header">
+    <view class="forum-title">🤝 学习搭子</view>
+    <view class="forum-sub">找同路人，一起把书读下去</view>
+  </view>
+
+  <!-- 分类 -->
+  <scroll-view scroll-x class="cat-scroll" show-scrollbar="{{false}}">
+    <view class="cat-tabs">
+      <view
+        wx:for="{{categories}}"
+        wx:key="value"
+        class="cat-tab {{activeCategory === item.value ? 'cat-active' : ''}}"
+        bindtap="switchCategory"
+        data-value="{{item.value}}"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 帖子列表 -->
+  <block wx:if="{{!loading}}">
+    <block wx:if="{{posts.length > 0}}">
+      <view
+        wx:for="{{posts}}"
+        wx:key="_id"
+        class="card post-card"
+        bindtap="goToDetail"
+        data-id="{{item._id}}"
+      >
+        <view class="post-head">
+          <image
+            wx:if="{{item.authorAvatar}}"
+            class="avatar"
+            src="{{item.authorAvatar}}"
+            mode="aspectFill"
+          />
+          <view wx:else class="avatar avatar-ph">📘</view>
+          <view class="post-head-info">
+            <view class="author-name">
+              {{item.authorName}}
+              <text wx:if="{{item.isMine}}" class="owner-tag">我发的</text>
+            </view>
+            <view class="post-time">{{item.timeAgo}} · {{item.category}}</view>
+          </view>
+        </view>
+
+        <view class="post-title">{{item.title}}</view>
+        <view class="post-content">{{item.content}}</view>
+
+        <view wx:if="{{item.subject || item.studyTime || item.location}}" class="post-tags">
+          <view wx:if="{{item.subject}}" class="mini-tag">📖 {{item.subject}}</view>
+          <view wx:if="{{item.studyTime}}" class="mini-tag">⏰ {{item.studyTime}}</view>
+          <view wx:if="{{item.location}}" class="mini-tag">📍 {{item.location}}</view>
+        </view>
+
+        <view class="post-foot">
+          <view
+            class="foot-btn {{item.isLiked ? 'liked' : ''}}"
+            catchtap="toggleLike"
+            data-id="{{item._id}}"
+          >{{item.isLiked ? '❤️' : '🤍'}} {{item.likeCount > 0 ? item.likeCount : '点赞'}}</view>
+          <view class="foot-btn">💬 {{item.commentCount > 0 ? item.commentCount : '评论'}}</view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="empty">
+      <view class="empty-icon">💬</view>
+      <view>还没有帖子</view>
+      <view class="mt-20" style="font-size: 24rpx; color: #999;">点右下角 ＋ 发布第一条</view>
+    </view>
+  </block>
+
+  <view wx:else class="loading">加载中...</view>
+
+  <!-- 发布按钮 -->
+  <view class="fab" bindtap="goToCreate">＋</view>
+</view>

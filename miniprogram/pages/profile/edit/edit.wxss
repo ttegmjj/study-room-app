@@ -1,0 +1,103 @@
+/* pages/profile/edit/edit.wxss —— 微信「个人资料」列表样式（精修版） */
+
+.page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 24rpx 0 60rpx;
+  background: #f2f3f6;
+}
+
+.group {
+  margin: 0 24rpx 24rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(31, 45, 61, 0.04);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 108rpx;
+  padding: 0 28rpx;
+  box-sizing: border-box;
+}
+
+/* 点击反馈 */
+.row-hover {
+  background: #f6f8fb;
+}
+
+/* 头像行是 button，需清掉默认边框/内边距 */
+.row-btn {
+  width: 100%;
+  height: 108rpx;
+  line-height: normal;
+  padding: 0 28rpx;
+  margin: 0;
+  background: #fff;
+  border-radius: 0;
+  text-align: left;
+  font-size: inherit;
+  color: inherit;
+}
+
+.row-btn::after {
+  border: none;
+}
+
+.row-label {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #191919;
+  letter-spacing: 0.5rpx;
+}
+
+.row-right {
+  display: flex;
+  align-items: center;
+  max-width: 68%;
+}
+
+.row-value {
+  font-size: 28rpx;
+  color: #5f6672;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-empty {
+  color: #b8bec9;
+}
+
+.row-avatar {
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 12rpx;
+  background: #eef1f5;
+  flex-shrink: 0;
+}
+
+.avatar-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+}
+
+.chevron {
+  margin-left: 10rpx;
+  font-size: 30rpx;
+  color: #c3c8d1;
+  line-height: 1;
+}
+
+.tips {
+  padding: 8rpx 44rpx 0;
+  font-size: 23rpx;
+  color: #9aa1ad;
+  line-height: 1.7;
+}

@@ -1,0 +1,159 @@
+﻿<!-- pages/index/index.wxml -->
+<view wx:if="{{wallpaper && wallpaper.hasWallpaper}}" class="wallpaper">
+  <image wx:if="{{wallpaper.isCustom || wallpaper.isImage}}" class="wallpaper-image" src="{{wallpaper.imageSrc}}" mode="aspectFill" />
+  <view wx:else class="wallpaper-gradient" style="{{wallpaper.bgStyle}}"></view>
+  <view class="wallpaper-overlay" style="{{wallpaper.overlayStyle}}"></view>
+</view>
+
+<!-- 顶部滚动公告（移入 container 内做圆角卡片） -->
+
+<view class="container">
+  <!-- 公告卡片 -->
+  <view wx:if="{{notice}}" class="notice-scroll" bindtap="showNotice">
+    <view class="notice-scroll-wrap">
+      <view class="notice-scroll-text">
+        <text class="notice-seg">{{noticeText}}</text><text class="notice-seg">{{noticeText}}</text><text class="notice-seg">{{noticeText}}</text><text class="notice-seg">{{noticeText}}</text><text class="notice-seg">{{noticeText}}</text>
+      </view>
+    </view>
+    <text class="notice-scroll-more">详情 ›</text>
+  </view>
+  <!-- 快捷入口 -->
+  <view class="quick-grid">
+    <view class="quick-item" bindtap="scanCheckin">
+      <text class="quick-icon">📷</text>
+      <view class="quick-title">扫码签到</view>
+      <view class="quick-sub">扫自习室二维码快速签到</view>
+    </view>
+    <view class="quick-item" bindtap="goToForum">
+      <text class="quick-icon">👥</text>
+      <view class="quick-title">学习搭子</view>
+      <view class="quick-sub">找同伴一起自习</view>
+    </view>
+    <view class="quick-item" bindtap="goToMyBookings">
+      <text class="quick-icon">📋</text>
+      <view class="quick-title">我的预约</view>
+      <view class="quick-sub">查看预约 / 签到</view>
+    </view>
+  </view>
+
+  <!-- 🏆 自习时长排行榜（搜索框上方） -->
+  <view class="ranking-bar" wx:if="{{ranking}}">
+    <view class="ranking-bar-head">
+      <text class="ranking-bar-title-icon">🏆</text>
+      <text class="ranking-bar-title-text">自习时长 {{rankingMode === 'week' ? '周榜' : '月榜'}}</text>
+      <text class="ranking-bar-switch" bindtap="toggleRankingMode">切换</text>
+    </view>
+
+    <!-- 有榜单数据时 -->
+    <block wx:if="{{ranking.list.length > 0}}">
+      <scroll-view class="ranking-bar-scroll" scroll-x="true" enable-flex="true">
+        <view class="ranking-bar-top3">
+          <view wx:for="{{ranking.list}}" wx:key="rank" class="ranking-bar-item">
+            <view class="ranking-bar-medal {{item.rank <= 3 ? 'medal-top' : ''}}">
+              <text wx:if="{{item.rank === 1}}">🥇</text>
+              <text wx:elif="{{item.rank === 2}}">🥈</text>
+              <text wx:elif="{{item.rank === 3}}">🥉</text>
+              <text wx:else>{{item.rank}}</text>
+            </view>
+            <view class="ranking-bar-avatar">
+              <image wx:if="{{item.avatar}}" src="{{item.avatar}}" mode="aspectFill" />
+              <text class="rb-avatar-ph-icon">👤</text>
+            </view>
+            <view class="ranking-bar-name">{{item.name}}</view>
+            <view class="ranking-bar-mins">{{item.totalMinutes}}分</view>
+          </view>
+        </view>
+      </scroll-view>
+      <view wx:if="{{ranking.myRank > 0}}" class="ranking-bar-me">
+        我的排名：<text class="rb-me-rank">第 {{ranking.myRank}} 名</text>
+        <text class="rb-me-sub">（{{ranking.myMinutes}} 分钟）</text>
+      </view>
+      <view wx:else class="ranking-bar-me ranking-bar-empty-me">开始签到即可上榜 💪</view>
+    </block>
+
+    <!-- 无数据占位 -->
+    <block wx:else>
+      <view class="ranking-bar-empty">
+        <text class="ranking-bar-empty-icon">📊</text>
+        <view class="ranking-bar-empty-text">暂无排行数据</view>
+        <view class="ranking-bar-empty-sub">完成签到后即可上榜展示</view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 搜索 + 筛选 -->
+  <view class="search-box">
+    <text class="search-icon-img">🔍</text>
+    <input
+      class="search-input"
+      placeholder="搜索自习室名称或位置"
+      value="{{keyword}}"
+      confirm-type="search"
+      bindinput="onSearchInput"
+    />
+    <text wx:if="{{keyword}}" class="search-clear" bindtap="clearSearch">✕</text>
+  </view>
+
+  <view class="filter-row">
+    <view class="filter-chip {{filterMode === 'all' ? 'active' : ''}}" data-mode="all" bindtap="setFilter">全部</view>
+    <view class="filter-chip {{filterMode === 'free' ? 'active' : ''}}" data-mode="free" bindtap="setFilter">有空位</view>
+    <view class="filter-chip {{filterMode === 'open' ? 'active' : ''}}" data-mode="open" bindtap="setFilter">开放中</view>
+  </view>
+
+  <!-- 自习室 -->
+  <block wx:if="{{!loading}}">
+    <block wx:if="{{rooms.length > 0}}">
+      <view class="section-head">
+        <text class="section-title">自习室</text>
+        <text class="section-sub">点击卡片立即预约</text>
+      </view>
+
+      <view class="room-grid">
+        <view
+          wx:for="{{rooms}}"
+          wx:key="_id"
+          class="card room-card {{item.status === 'closed' ? 'room-closed' : ''}}"
+          bindtap="goToBooking"
+          data-id="{{item._id}}"
+          data-name="{{item.name}}"
+        >
+          <text class="room-emoji-icon">📖</text>
+          <view class="room-name">{{item.name}}</view>
+          <!-- 自习室整体标签（roomTags） -->
+          <view wx:if="{{item.roomTags && item.roomTags.length > 0}}" class="room-tags-row">
+            <text class="room-tag" wx:for="{{item.roomTags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+          </view>
+          <view class="room-loc">{{item.location}}</view>
+          <view class="room-time">{{item.openTime}} - {{item.closeTime}}</view>
+          <view class="room-foot">
+            <text class="room-seats">{{item.totalSeats}} 座</text>
+            <text wx:if="{{item.status !== 'closed'}}" class="room-left {{item.available === 0 ? 'room-full' : ''}}">{{item.available === 0 ? '已满' : '余 ' + item.available}}</text>
+            <text wx:else class="room-left room-paused">⏸ 暂停开放</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="empty">
+      <view class="empty-icon">{{allRooms.length > 0 ? '🔍' : '🏫'}}</view>
+      <view>{{allRooms.length > 0 ? '没有符合条件的自习室' : '暂无可预约的自习室'}}</view>
+      <view class="mt-20" style="font-size: 24rpx; color: #999;">{{allRooms.length > 0 ? '试试换个关键词或筛选条件' : '请联系管理员添加'}}</view>
+    </view>
+  </block>
+
+  <view wx:else class="loading">加载中...</view>
+</view>
+
+<!-- 公告详情弹窗 -->
+<view wx:if="{{showNoticeModal}}" class="notice-mask" bindtap="closeNotice">
+  <view class="notice-modal" catchtap="noop">
+    <view class="notice-modal-head">
+      <text class="nm-icon">📢</text>
+      <view class="nm-title">{{notice.title || '公告通知'}}</view>
+    </view>
+    <scroll-view scroll-y class="notice-modal-body">
+      <text class="nm-content">{{notice.content}}</text>
+    </scroll-view>
+    <view class="notice-modal-btn" bindtap="closeNotice">知道了</view>
+  </view>
+</view>

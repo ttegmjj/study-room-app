@@ -1,0 +1,59 @@
+<view class="container">
+
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-title">🤖 AI 智能助手</view>
+    <view class="header-sub">wx.cloud.extend.AI · 大模型对话演示</view>
+  </view>
+
+  <!-- 预设快捷词 -->
+  <view class="presets" wx:if="{{!output}}">
+    <view class="presets-title">📌 试试这些</view>
+    <view class="preset-list">
+      <view class="preset-item" wx:for="{{presets}}" wx:key="*this" data-text="{{item}}" bindtap="onPreset">{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 输入框 -->
+  <view class="input-card">
+    <textarea
+      class="input-area"
+      value="{{input}}"
+      bindinput="onInput"
+      placeholder="向 AI 小自提一个关于自习的问题..."
+      auto-height
+      maxlength="500"
+    />
+    <view class="actions">
+      <view class="model-tag">模型：{{model}}</view>
+      <view class="btn-row">
+        <view class="btn btn-ghost" bindtap="onClear" wx:if="{{input || output}}">清空</view>
+        <view class="btn btn-primary {{loading ? 'disabled' : ''}}" bindtap="sendAI">
+          {{loading ? '生成中...' : '✨ AI 生成'}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 输出 -->
+  <view class="output-card" wx:if="{{output || loading}}">
+    <view class="output-head">
+      <text class="output-title">💡 AI 回答</text>
+      <text class="output-copy" bindtap="onCopy" wx:if="{{output}}">复制</text>
+    </view>
+    <view class="output-body {{loading ? 'typing' : ''}}">
+      <text wx:if="{{loading && !output}}">🤔 正在思考...</text>
+      <text wx:if="{{output}}">{{output}}</text>
+      <view wx:if="{{loading && output}}" class="cursor">▌</view>
+    </view>
+  </view>
+
+  <!-- 技术说明 -->
+  <view class="tech-card">
+    <view class="tech-title">🔧 技术实现</view>
+    <view class="tech-line">• wx.cloud.extend.AI.createModel('cloudbase')</view>
+    <view class="tech-line">• provider.generateText({ model, messages })</view>
+    <view class="tech-line">• 基础库 ≥ 3.15.1 · 微信云开发 AI 能力</view>
+  </view>
+
+</view>

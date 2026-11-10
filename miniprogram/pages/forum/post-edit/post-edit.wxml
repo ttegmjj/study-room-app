@@ -1,0 +1,114 @@
+<!-- pages/forum/post-edit/post-edit.wxml -->
+<view class="container">
+  <view class="card">
+    <!-- 分类 -->
+    <view class="form-row">
+      <view class="form-label">分类</view>
+      <picker mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
+        <view class="picker-value">{{categories[categoryIndex]}} ›</view>
+      </picker>
+    </view>
+
+    <view class="divider"></view>
+
+    <!-- 标题 -->
+    <view class="form-row">
+      <view class="form-label">标题</view>
+      <input
+        class="form-input"
+        placeholder="一句话说明你想找什么搭子"
+        placeholder-class="ph"
+        maxlength="50"
+        value="{{title}}"
+        data-field="title"
+        bindinput="onInput"
+      />
+    </view>
+
+    <view class="divider"></view>
+
+    <!-- 正文 -->
+    <view class="form-block">
+      <view class="form-label">内容</view>
+      <textarea
+        class="form-textarea"
+        placeholder="介绍一下你的学习目标、作息习惯、希望搭子做什么…（最多 1000 字）"
+        placeholder-class="ph"
+        maxlength="1000"
+        value="{{content}}"
+        data-field="content"
+        bindinput="onInput"
+      />
+      <view class="counter">{{contentLength}} / 1000</view>
+    </view>
+  </view>
+
+  <!-- 选填信息 -->
+  <view class="card">
+    <view class="card-title">补充信息（选填）</view>
+
+    <view class="form-row">
+      <view class="form-label">科目</view>
+      <input
+        class="form-input"
+        placeholder="如 考研数学 / 英语四级"
+        placeholder-class="ph"
+        maxlength="30"
+        value="{{subject}}"
+        data-field="subject"
+        bindinput="onInput"
+      />
+    </view>
+
+    <view class="divider"></view>
+
+    <view class="form-row">
+      <view class="form-label">学习时间</view>
+      <input
+        class="form-input"
+        placeholder="如 工作日 19:00-22:00"
+        placeholder-class="ph"
+        maxlength="40"
+        value="{{studyTime}}"
+        data-field="studyTime"
+        bindinput="onInput"
+      />
+    </view>
+
+    <view class="divider"></view>
+
+    <view class="form-row">
+      <view class="form-label">常来自习室</view>
+      <input
+        class="form-input"
+        placeholder="如 晨光自习室"
+        placeholder-class="ph"
+        maxlength="40"
+        value="{{location}}"
+        data-field="location"
+        bindinput="onInput"
+      />
+    </view>
+
+    <view class="divider"></view>
+
+    <view class="form-row">
+      <view class="form-label">联系方式</view>
+      <input
+        class="form-input"
+        placeholder="微信号 / 手机号（仅详情页展示）"
+        placeholder-class="ph"
+        maxlength="40"
+        value="{{contact}}"
+        data-field="contact"
+        bindinput="onInput"
+      />
+    </view>
+  </view>
+
+  <view class="btn-primary submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit">
+    {{submitting ? '发布中...' : '发布帖子'}}
+  </view>
+
+  <view class="tip">请文明发言，禁止发布广告或违规内容</view>
+</view>

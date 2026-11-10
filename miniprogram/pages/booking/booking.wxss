@@ -1,0 +1,843 @@
+/* pages/booking/booking.wxss */
+
+/* 底部固定操作栏会遮挡内容，这里给它留出空间 */
+.container {
+  padding: 30rpx 30rpx 360rpx;
+}
+
+/* t5: 批量预约开关卡片 */
+.batch-switch-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20rpx 0;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(135deg, #f0f7ff, #e6f0ff);
+  border: 2rpx solid #c6ddf5;
+  border-radius: 16rpx;
+}
+.batch-switch-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.batch-switch-icon {
+  font-size: 44rpx;
+  margin-right: 16rpx;
+}
+.batch-switch-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #357ABD;
+}
+.batch-switch-sub {
+  font-size: 22rpx;
+  color: #7a92b2;
+  margin-top: 4rpx;
+}
+
+.room-info-card {
+  background: linear-gradient(135deg, #4A90D9, #357ABD);
+  color: #fff;
+}
+
+.room-title {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.room-time {
+  font-size: 26rpx;
+  margin-top: 10rpx;
+  opacity: 0.9;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  color: #333;
+}
+
+/* 日期选择（日历网格） */
+
+.cal-header {
+  display: flex;
+  margin-bottom: 8rpx;
+}
+
+.cal-week {
+  width: 14.28%;
+  text-align: center;
+  font-size: 22rpx;
+  color: #999;
+  padding: 8rpx 0;
+}
+
+.cal-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cal-day {
+  width: 14.28%;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+/* 不可选：灰色 */
+.cal-disabled {
+  color: #ccc;
+  font-weight: normal;
+  background: transparent;
+}
+
+/* 今天（未选中时加蓝框标识） */
+.cal-today {
+  color: #4A90D9;
+  font-weight: bold;
+}
+
+/* 选中：蓝底白字圆块 */
+.cal-selected {
+  background: #4A90D9;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  margin: 4rpx auto;
+  box-shadow: 0 4rpx 12rpx rgba(74, 144, 217, 0.35);
+}
+
+.cal-hint {
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: #999;
+  text-align: center;
+}
+
+/* 提示文字 */
+
+.time-hint {
+  font-size: 22rpx;
+  color: #999;
+  text-align: center;
+}
+
+/* 座位选择（教室俯视图） */
+.seat-map {
+  padding: 4rpx 0;
+}
+
+.legend {
+  display: flex;
+  gap: 30rpx;
+  margin-bottom: 24rpx;
+  padding: 16rpx;
+  background: #f8f9fb;
+  border-radius: 8rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 22rpx;
+  color: #666;
+}
+
+.legend-box {
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 6rpx;
+  margin-right: 8rpx;
+}
+
+.legend-box.available {
+  background: #c8e6c9;
+  border: 2rpx solid #4caf50;
+}
+
+.legend-box.booked {
+  background: #ffe0b2;
+  border: 2rpx solid #ff9800;
+}
+
+.legend-box.selected {
+  background: #4A90D9;
+}
+
+.classroom {
+  border: 2rpx solid #dbe2ec;
+  border-radius: 20rpx;
+  background: #fbfcfe;
+  padding: 20rpx 16rpx 12rpx;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* 教室实景底图（拍照识别时保存的原图，可展开对照） */
+.layout-photo-toggle {
+  display: inline-block;
+  margin-bottom: 20rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 24rpx;
+  background: #eef3fa;
+  color: #4A90D9;
+  font-size: 23rpx;
+}
+
+.layout-photo {
+  display: block;
+  width: 100%;
+  margin-bottom: 24rpx;
+  border-radius: 12rpx;
+  border: 2rpx solid #dbe2ec;
+}
+
+.room-top {
+  height: 76rpx;
+  background: linear-gradient(135deg, #3a4d63, #4A90D9);
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+}
+
+.blackboard {
+  color: #fff;
+  font-size: 24rpx;
+  letter-spacing: 6rpx;
+}
+
+.room-body {
+  display: flex;
+  align-items: center;
+}
+
+.room-wall {
+  width: 34rpx;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f4f9;
+  border-top: 2rpx solid #dbe2ec;
+  border-bottom: 2rpx solid #dbe2ec;
+}
+
+.room-wall.left {
+  border-left: 2rpx solid #dbe2ec;
+  border-radius: 8rpx 0 0 8rpx;
+}
+
+.room-wall.right {
+  border-right: 2rpx solid #dbe2ec;
+  border-radius: 0 8rpx 8rpx 0;
+}
+
+.wall-label {
+  font-size: 20rpx;
+  color: #8a97a8;
+  transform: rotate(90deg);
+}
+
+.room-seats {
+  flex: 1;
+  min-width: 0;
+  padding: 24rpx 14rpx;
+  /* 座位较多时整块横向滚动，避免一排座位被折行 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.seat-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14rpx;
+}
+
+.seat-row:last-child {
+  margin-bottom: 0;
+}
+
+.row-label {
+  width: 34rpx;
+  font-size: 22rpx;
+  color: #8a97a8;
+}
+
+.row-seats {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: nowrap;
+}
+
+.seat {
+  position: relative;
+  width: 64rpx;
+  height: 64rpx;
+  background: #e8f5e9;
+  color: #2e7d32;
+  text-align: center;
+  line-height: 64rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #c8e6c9;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+/* 座位类型标签（充电位/靠窗/VIP，管理端录入的类型） */
+.seat-tag {
+  position: absolute;
+  right: 2rpx;
+  bottom: -6rpx;
+  font-size: 18rpx;
+  line-height: 1;
+}
+
+/* t2: 已收藏座位右上角 ⭐ 角标 */
+.seat-fav-badge {
+  position: absolute;
+  top: -8rpx;
+  left: -4rpx;
+  font-size: 22rpx;
+  line-height: 1;
+  filter: drop-shadow(0 1rpx 2rpx rgba(0,0,0,0.2));
+}
+
+/* 现场占用：红色角标 */
+.seat-occupy-badge {
+  position: absolute;
+  bottom: -4rpx;
+  right: -6rpx;
+  font-size: 16rpx;
+  line-height: 1;
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+  background: #E74C3C;
+  color: #fff;
+  font-weight: bold;
+}
+/* 已被预约：蓝色角标 */
+.seat-booked-badge {
+  position: absolute;
+  bottom: -4rpx;
+  right: -6rpx;
+  font-size: 16rpx;
+  line-height: 1;
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+  background: #4A90D9;
+  color: #fff;
+  font-weight: bold;
+}
+
+.seat-type-hint {
+  font-size: 20rpx;
+  color: #a2acb9;
+  margin-bottom: 14rpx;
+}
+
+.seat-booked {
+  background: #fff3e0;
+  color: #e65100;
+  border-color: #ffe0b2;
+}
+
+.seat-selected {
+  background: #4A90D9;
+  color: #fff;
+  border-color: #357ABD;
+  box-shadow: 0 4rpx 12rpx rgba(74, 144, 217, 0.4);
+}
+
+/* 过道（管理员设置的座位间隔，加宽 + 过道标识） */
+.seat-gap {
+  width: 56rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.seat-gap::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 4rpx;
+  bottom: 4rpx;
+  width: 2rpx;
+  border-left: 2rpx dashed #c8d6e5;
+  transform: translateX(-50%);
+}
+
+.seat-gap-label {
+  position: absolute;
+  font-size: 14rpx;
+  color: #8a97a8;
+  writing-mode: vertical-rl;
+  letter-spacing: 2rpx;
+  z-index: 1;
+  background: #fbfcfe;
+  padding: 2rpx 0;
+}
+
+/* 排间过道（某排之前留大间距） */
+.row-gap-before {
+  height: 20rpx;
+  position: relative;
+  margin: 0 -14rpx;
+}
+
+.row-gap-before::after {
+  content: '— 过 道 —';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16rpx;
+  color: #b0b8c4;
+  letter-spacing: 4rpx;
+  white-space: nowrap;
+  background: #fbfcfe;
+  padding: 0 12rpx;
+}
+
+/* 底部墙与出入口 */
+.room-bottom {
+  display: flex;
+  align-items: center;
+  margin-top: 24rpx;
+  height: 54rpx;
+}
+
+.wall-seg {
+  flex: 1;
+  height: 2rpx;
+  background: #dbe2ec;
+}
+
+.door {
+  width: 190rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 8rpx 0;
+  background: #eef3fb;
+  border-radius: 8rpx;
+}
+
+.door-icon {
+  font-size: 26rpx;
+}
+
+.door-text {
+  font-size: 22rpx;
+  color: #4A90D9;
+}
+
+.empty-hint {
+  text-align: center;
+  color: #999;
+  font-size: 26rpx;
+  padding: 30rpx;
+}
+
+/* 底部栏 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.selected-info {
+  flex: 1;
+}
+
+.info-line {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.highlight {
+  color: #4A90D9;
+  font-weight: bold;
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #4A90D9, #357ABD);
+  color: #fff;
+  padding: 18rpx 50rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.btn-confirm-hover {
+  opacity: 0.8;
+}
+
+/* ===== 时间段选择弹窗 ===== */
+
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  box-sizing: border-box;
+}
+
+.time-modal {
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 36rpx 30rpx;
+  box-sizing: border-box;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+.modal-sub {
+  font-size: 22rpx;
+  color: #999;
+  text-align: center;
+  margin-top: 12rpx;
+  line-height: 1.6;
+}
+
+.modal-legend {
+  display: flex;
+  gap: 30rpx;
+  justify-content: center;
+  margin: 24rpx 0;
+  padding: 14rpx;
+  background: #f8f9fb;
+  border-radius: 8rpx;
+}
+
+.legend-box.slot-free {
+  background: #fff;
+  border: 2rpx solid #c8e6c9;
+}
+
+.legend-box.slot-booked-box {
+  background: #ff5252;
+  border: 2rpx solid #ff5252;
+}
+
+.legend-box.slot-chosen-box {
+  background: #4A90D9;
+  border: 2rpx solid #4A90D9;
+}
+
+.legend-box.slot-past-box {
+  background: #b7bcc6;
+  border: 2rpx solid #b7bcc6;
+}
+
+/* 时间长条（点击座位弹弹窗） */
+.strip-modal {
+  padding-top: 36rpx;
+  padding-bottom: 32rpx;
+}
+
+.strip-empty {
+  padding: 60rpx 20rpx;
+  text-align: center;
+  color: #8a97a8;
+}
+.strip-empty-icon {
+  font-size: 72rpx;
+  margin-bottom: 16rpx;
+}
+.strip-empty-hint {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #b0b8c4;
+}
+
+.time-strip-wrap {
+  position: relative;
+  margin: 32rpx 4rpx 8rpx;
+  padding-top: 56rpx;   /* 给顶部刻度 + 气泡留空间 */
+  padding-bottom: 8rpx;
+}
+
+/* 时间条主体：一条线（touch 区域足够宽，但视觉上只有一条细线） */
+.time-strip {
+  position: relative;
+  width: 100%;
+  height: 110rpx;      /* 整个触摸热区高 */
+  overflow: visible;
+}
+
+.time-strip-body {
+  touch-action: pan-x;
+}
+
+/* 细线轨道（视觉主体，居中偏下） */
+.strip-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4rpx;
+  background: #dde3ec;
+  border-radius: 2rpx;
+  transform: translateY(-50%);
+}
+
+/* 已约/已过遮罩层：叠在细线上 */
+.strip-masks {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 12rpx;
+  transform: translateY(-50%);
+  display: flex;
+  flex-wrap: nowrap;
+  z-index: 0;
+}
+.strip-mask {
+  height: 100%;
+  flex-shrink: 0;
+}
+.mask-booked {
+  background: rgba(255, 82, 82, 0.35);
+}
+.mask-past {
+  background: rgba(183, 188, 198, 0.55);
+}
+
+/* 选中区间高亮线（蓝色、比轨道粗、浮在遮罩之上） */
+.strip-selected-line {
+  position: absolute;
+  top: 50%;
+  height: 14rpx;
+  background: linear-gradient(90deg, #357ABD, #4A90D9);
+  border-radius: 7rpx;
+  transform: translateY(-50%);
+  z-index: 2;
+  box-shadow: 0 0 0 2rpx rgba(74, 144, 217, 0.15);
+}
+
+/* 滑块容器：透明热区 */
+.strip-thumb {
+  position: absolute;
+  top: 50%;
+  width: 110rpx;
+  height: 110rpx;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+/* 滑块圆点：32rpx，视觉上轻盈 */
+.thumb-dot {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background: #fff;
+  border: 3rpx solid #4A90D9;
+  box-shadow:
+    0 2rpx 5rpx rgba(0, 0, 0, 0.22),
+    0 0 0 4rpx rgba(74, 144, 217, 0.15);
+}
+
+/* 起点滑块：实心蓝 */
+.strip-thumb-start .thumb-dot {
+  background: #4A90D9;
+  border-color: #357ABD;
+}
+
+/* 时间气泡（在圆点正上方） */
+.thumb-bubble {
+  position: absolute;
+  top: 0;              /* 贴滑块容器顶（滑块中心在细线上，容器顶在细线上方 55rpx） */
+  left: 50%;
+  transform: translate(-50%, -100%);   /* 再往上抬一点，让气泡底边对齐容器顶 */
+  background: #4A90D9;
+  color: #fff;
+  font-size: 22rpx;
+  line-height: 1.4;
+  padding: 6rpx 14rpx;
+  border-radius: 10rpx;
+  white-space: nowrap;
+  letter-spacing: 0.5rpx;
+  box-shadow: 0 2rpx 8rpx rgba(74, 144, 217, 0.4);
+}
+
+/* 三角箭头（纯 CSS，指向下，贴在气泡底边） */
+.thumb-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -10rpx;
+  transform: translateX(-50%);
+  border: 5rpx solid transparent;
+  border-top-color: #4A90D9;
+  border-bottom: 0;
+}
+
+.thumb-bubble-start {
+  background: #357ABD;
+}
+.thumb-bubble-start::after {
+  border-top-color: #357ABD;
+}
+
+/* 吸附反馈：气泡抖动 + 变红 */
+.bubble-shake {
+  animation: bubble-shake 0.22s ease-out;
+}
+.bubble-warn {
+  background: #E74C3C !important;
+}
+.bubble-warn::after {
+  border-top-color: #E74C3C !important;
+}
+
+@keyframes bubble-shake {
+  0%   { transform: translate(-50%, -100%) translateX(0); }
+  25%  { transform: translate(-50%, -100%) translateX(-6rpx); }
+  50%  { transform: translate(-50%, -100%) translateX(5rpx); }
+  75%  { transform: translate(-50%, -100%) translateX(-3rpx); }
+  100% { transform: translate(-50%, -100%) translateX(0); }
+}
+
+/* 顶部小时刻度 */
+.time-strip-ticks {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 36rpx;
+  pointer-events: none;
+}
+.time-strip-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 20rpx;
+  color: #8a97a8;
+  white-space: nowrap;
+}
+
+.modal-sel {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #4A90D9;
+  font-weight: bold;
+}
+
+.modal-sel-empty {
+  color: #bbb;
+  font-weight: normal;
+  font-size: 24rpx;
+}
+
+.modal-btns {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 30rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 20rpx 0;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  text-align: center;
+  font-weight: 500;
+}
+
+.modal-btn-cancel {
+  background: #f2f3f5;
+  color: #666;
+}
+
+.modal-btn-ok {
+  background: linear-gradient(135deg, #4A90D9, #357ABD);
+  color: #fff;
+}
+
+/* ===== AI 智能推荐卡片 ===== */
+.ai-card {
+  background: linear-gradient(135deg, #F1F8E9 0%, #FFFFFF 100%);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin: 20rpx 0 30rpx;
+  border-left: 6rpx solid #66BB6A;
+  box-shadow: 0 4rpx 16rpx rgba(102, 187, 106, 0.15);
+}
+.ai-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+.ai-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2E7D32;
+}
+.ai-btn {
+  font-size: 24rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #43A047, #66BB6A);
+  color: #fff;
+}
+.ai-btn-loading {
+  opacity: 0.6;
+}
+.ai-body {
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.7;
+  min-height: 48rpx;
+  white-space: pre-wrap;
+}
+.ai-empty {
+  color: #999;
+  font-size: 24rpx;
+}

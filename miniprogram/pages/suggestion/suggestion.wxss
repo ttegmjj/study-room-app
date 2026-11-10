@@ -1,0 +1,99 @@
+/* pages/suggestion/suggestion.wxss */
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.hint {
+  font-size: 22rpx;
+  color: #999;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+}
+
+.content-input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 200rpx;
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 26rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.contact-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 26rpx;
+  color: #333;
+  margin-bottom: 24rpx;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #4A90D9, #357ABD);
+  color: #fff;
+  text-align: center;
+  padding: 20rpx 0;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.btn-disabled {
+  opacity: 0.6;
+}
+
+.sg-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f1f4;
+}
+
+.sg-item:last-child {
+  border-bottom: none;
+}
+
+.sg-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.sg-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.sg-status {
+  font-size: 20rpx;
+  color: #e65100;
+  background: #fff3e0;
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+}
+
+.sg-status.sg-done {
+  color: #2e7d32;
+  background: #e8f5e9;
+}
+
+.sg-content {
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.6;
+}
+
+.loading, .empty {
+  text-align: center;
+  color: #999;
+  font-size: 26rpx;
+  padding: 40rpx 0;
+}
