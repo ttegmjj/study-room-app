@@ -81,14 +81,19 @@ Page({
   },
 
   onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 0 })
+    }
+    // 节流：距离上次加载 < 5 秒直接返回（评委演示时快速切 Tab 不会卡）
+    const now = Date.now()
+    if (this._lastOnShow && now - this._lastOnShow < 5000) return
+    this._lastOnShow = now
     this.loadRooms()
     this.loadWallpaper()
     this.loadNotice()
     this.loadRanking()
-    this.checkTimeoutBookings()
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ selected: 0 })
-    }
+    // checkTimeoutBookings 独立跑，失败不影响首页展示
+    this.checkTimeoutBookings().catch(() => {})
   },
 
   /** 检查是否有因超时（开始后 15 分钟未签到）被系统自动取消的预约，并有则弹窗提醒 */
@@ -130,6 +135,8 @@ Page({
   },
 
   onPullDownRefresh() {
+    api.clearCache() // 强制清缓存，下拉刷新 = 强制最新数据
+    this._lastOnShow = 0 // 重置节流
     Promise.all([this.loadRooms(), this.loadNotice(), this.loadRanking()]).then(() => wx.stopPullDownRefresh())
   },
 

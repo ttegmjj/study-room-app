@@ -95,3 +95,6 @@
 
   <view wx:else class="loading">加载中...</view>
 </view>
+
+<!-- AI 悬浮球 -->
+<ai-ball />

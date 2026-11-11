@@ -1,0 +1,83 @@
+<!-- pages/admin/users/users.wxml -->
+<view class="container">
+
+  <!-- 筛选栏 -->
+  <view class="filter-row">
+    <view class="filter-chip {{filterMode === 'all' ? 'active' : ''}}" data-mode="all" bindtap="setFilter">全部</view>
+    <view class="filter-chip {{filterMode === 'noshow' ? 'active' : ''}}" data-mode="noshow" bindtap="setFilter">爽约≥1次</view>
+    <view class="filter-chip {{filterMode === 'banned' ? 'active' : ''}}" data-mode="banned" bindtap="setFilter">禁约中</view>
+    <view class="filter-refresh" bindtap="refresh">🔄</view>
+  </view>
+
+  <!-- 列表 -->
+  <view wx:if="{{!loading}}">
+    <view wx:if="{{users.length > 0}}" class="user-list">
+      <view wx:for="{{users}}" wx:key="_id" class="user-card">
+        <!-- 头像+名字 -->
+        <view class="user-head">
+          <view class="user-avatar">
+            <image wx:if="{{item.avatar}}" src="{{item.avatar}}" mode="aspectFill" />
+            <text wx:else>👤</text>
+          </view>
+          <view class="user-info">
+            <view class="user-name">{{item.name}}</view>
+            <view class="user-openid">{{item.openid}}</view>
+          </view>
+        </view>
+
+        <!-- 状态标签 -->
+        <view class="user-tags">
+          <view class="tag noshow-tag" wx:if="{{item.noShowCount > 0}}">
+            ⚠️ 爽约 {{item.noShowCount}} 次
+          </view>
+          <view class="tag ban-tag" wx:if="{{item.banned}}">
+            ⛔ 禁约 {{item.banHours}}h
+          </view>
+          <view class="tag ok-tag" wx:if="{{item.noShowCount === 0 && !item.banned}}">
+            ✅ 正常
+          </view>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="user-actions">
+          <!-- 被禁约中 → 先显示解封（最常用） -->
+          <view
+            wx:if="{{item.banned}}"
+            class="action-btn unban-btn"
+            data-openid="{{item.openid}}"
+            data-name="{{item.name}}"
+            bindtap="unbanUser"
+          >
+            ✅ 解封
+          </view>
+          <!-- 禁约 / 延长禁约 -->
+          <view
+            class="action-btn ban-btn"
+            data-openid="{{item.openid}}"
+            data-name="{{item.name}}"
+            data-hours="{{item.banHours}}"
+            bindtap="banUser"
+          >
+            {{item.banned ? '延长禁约' : '⛔ 禁约'}}
+          </view>
+          <!-- 删除用户（连带删预约） -->
+          <view
+            class="action-btn del-btn"
+            data-openid="{{item.openid}}"
+            data-name="{{item.name}}"
+            bindtap="deleteUser"
+          >
+            🗑️ 删除
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty">
+      <view class="empty-icon">🎉</view>
+      <view>没有符合条件的用户</view>
+    </view>
+  </view>
+
+  <view wx:else class="loading">加载中...</view>
+</view>

@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "征集建议"
+  "navigationBarTitleText": "征集建议",
+  "usingComponents": {
+    "ai-ball": "/components/ai-ball/ai-ball"
+  }
 }

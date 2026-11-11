@@ -1,0 +1,163 @@
+/* pages/admin/users/users.wxss */
+.container {
+  padding: 24rpx;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.filter-chip {
+  padding: 12rpx 24rpx;
+  background: #f5f5f7;
+  border-radius: 24rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.filter-chip.active {
+  background: #4A90D9;
+  color: #fff;
+}
+
+.filter-refresh {
+  margin-left: auto;
+  font-size: 36rpx;
+  padding: 8rpx 16rpx;
+}
+
+/* 用户卡片 */
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.user-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.user-head {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.user-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #eee;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+}
+
+.user-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.user-openid {
+  font-size: 22rpx;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 状态标签 */
+.user-tags {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 24rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
+}
+
+.noshow-tag {
+  background: #fff4e6;
+  color: #e88c00;
+}
+
+.ban-tag {
+  background: #ffe6e6;
+  color: #e53e3e;
+}
+
+.ok-tag {
+  background: #e6ffed;
+  color: #38a169;
+}
+
+/* 操作按钮 */
+.user-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+}
+
+.ban-btn {
+  background: #fff4e6;
+  color: #e88c00;
+}
+
+.unban-btn {
+  background: #e6ffed;
+  color: #38a169;
+}
+
+.del-btn {
+  background: #ffe6e6;
+  color: #e53e3e;
+}
+
+.empty {
+  text-align: center;
+  padding: 120rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.empty-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+}
+
+.loading {
+  text-align: center;
+  padding: 120rpx 0;
+  color: #999;
+}

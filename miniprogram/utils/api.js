@@ -1,13 +1,94 @@
-// utils/api.js - 云函数 API 封装
+// utils/api.js - 云函数 API 封装（带内存缓存）
+const cache = require('./cache.js')
 
-const call = (action, data = {}) => {
+/**
+ * 调用云函数，自动加 30 秒内存缓存
+ * 纯读接口自动缓存；写操作（create/update/delete）自动失效相关前缀
+ */
+const CACHE_TTL = 30000 // 30 秒
+
+const CACHABLE = {
+  getRooms: true,
+  getRoomsWithStats: true,
+  getRoomDetail: true,
+  getSeats: true,
+  getSeatBookings: true,
+  getMyBookings: true,
+  getCheckinInfo: true,
+  checkIsAdmin: true,
+  adminGetBookings: true,
+  getStats: true,
+  getUserInfo: true,
+  getMyStats: true,
+  getPosts: true,
+  getPostDetail: true,
+  getAppearance: true,
+  getNotice: true,
+  getSubscribeTemplate: true,
+  getMySuggestions: true,
+  getSuggestions: true,
+  getFavoriteSeats: true,
+  getStudyRanking: true,
+  getRoomQrCode: true,
+  findScanBooking: true
+}
+
+/** 哪些写操作会让哪些缓存失效 */
+const INVALIDATE_MAP = {
+  createRoom: ['getRooms', 'getRoomsWithStats'],
+  updateRoom: ['getRooms', 'getRoomsWithStats', 'getRoomDetail', 'getSeats'],
+  deleteRoom: ['getRooms', 'getRoomsWithStats'],
+  addSeats: ['getSeats'],
+  removeSeats: ['getSeats'],
+  updateSeatLayout: ['getSeats'],
+  createBooking: ['getMyBookings', 'getSeats', 'getSeatBookings'],
+  createBookingBatch: ['getMyBookings', 'getSeats', 'getSeatBookings'],
+  cancelBooking: ['getMyBookings', 'getSeats', 'getSeatBookings'],
+  deleteMyBookings: ['getMyBookings'],
+  checkIn: ['getMyBookings', 'getCheckinInfo'],
+  checkOut: ['getMyBookings', 'getCheckinInfo'],
+  markSeatOccupied: ['getSeats', 'getSeatBookings'],
+  releaseSeatOccupied: ['getSeats', 'getSeatBookings'],
+  setNotice: ['getNotice'],
+  setAppearance: ['getAppearance'],
+  saveFavoriteSeat: ['getFavoriteSeats'],
+  removeFavoriteSeat: ['getFavoriteSeats'],
+  createPost: ['getPosts'],
+  deletePost: ['getPosts']
+}
+
+function call(action, data = {}, opts = {}) {
+  const skipCache = opts.skipCache === true
+  const force = opts.force === true
+  const ttl = opts.ttl || CACHE_TTL
+
+  const cacheable = CACHABLE[action]
+  const cacheKey = action + ':' + JSON.stringify(data)
+
+  // 读接口：先查缓存
+  if (cacheable && !skipCache && !force) {
+    const hit = cache.get(cacheKey)
+    if (hit !== null) {
+      // console.log('[api cache hit]', action)
+      return Promise.resolve(hit)
+    }
+  }
+
+  // console.log('[api]', action)
   return new Promise((resolve, reject) => {
     wx.cloud.callFunction({
       name: 'api',
       data: { action, ...data },
       success: res => {
         if (res.result && res.result.code === 0) {
-          resolve(res.result.data !== undefined ? res.result.data : res.result)
+          const result = res.result.data !== undefined ? res.result.data : res.result
+          // 成功 → 读接口缓存；写接口失效相关
+          if (cacheable && !skipCache) {
+            cache.set(cacheKey, result, ttl)
+          } else if (INVALIDATE_MAP[action]) {
+            INVALIDATE_MAP[action].forEach(prefix => cache.invalidate(prefix))
+          }
+          resolve(result)
         } else {
           const r = res.result || {}
           const msg = r.message || '请求失败'
@@ -27,8 +108,12 @@ const call = (action, data = {}) => {
   })
 }
 
+// 公共：让外部（如 pullDownRefresh）强制清除所有缓存
+function clearCache() { cache.clear() }
+
 // 自习室
 module.exports = {
+  clearCache,
   getRooms: () => call('getRooms'),
   getRoomsWithStats: (date) => call('getRoomsWithStats', { date }),
   getRoomDetail: (roomId) => call('getRoomDetail', { roomId }),
@@ -41,13 +126,10 @@ module.exports = {
   getSeatBookings: (roomId, seatId, date) => call('getSeatBookings', { roomId, seatId, date }),
   addSeats: (roomId, seats) => call('addSeats', { roomId, seats }),
   removeSeats: (roomId, seatIds) => call('removeSeats', { roomId, seatIds }),
-  // 座位布局（座位间隔/连座）：复用 updateRoom 整体写回 seats 数组（云端有管理员校验）
   updateSeatLayout: (roomId, seats, layoutImage) => call('updateRoom', layoutImage
     ? { roomId, seats, layoutImage }
     : { roomId, seats }),
-  // 拍照识别座位布局（云开发 AI 多模态）
   recognizeSeatLayout: (roomId, fileID) => call('recognizeSeats', { roomId, fileID }),
-  // 自习室签到小程序码 / 扫码后定位自己的预约
   getRoomQrCode: (roomId) => call('getRoomQrCode', { roomId }),
   getScanBooking: (scene, roomId) => call('findScanBooking', { scene: scene || '', roomId: roomId || '' }),
 
@@ -68,6 +150,8 @@ module.exports = {
   setAdmin: (openid, isAdmin) => call('setAdmin', { openid, isAdminFlag: isAdmin }),
   getAdminCandidates: (keyword) => call('getAdminCandidates', { keyword: keyword || '' }),
   adminSetUserBan: (openid, days) => call('adminSetUserBan', { openid, days }),
+  adminListUsers: (threshold) => call('adminListUsers', { threshold: threshold || 0 }),
+  adminDeleteUser: (openid) => call('adminDeleteUser', { openid }),
   adminExportBookings: (date) => call('adminExportBookings', { date: date || '' }),
   adminGetBookings: (params) => call('adminGetBookings', params || {}),
   updateBookingStatus: (bookingId, status) => call('updateBookingStatus', { bookingId, status }),
@@ -78,7 +162,7 @@ module.exports = {
   updateUserInfo: (data) => call('updateUserInfo', data),
   getMyStats: () => call('getMyStats'),
 
-  // 学习搭子论坛
+  // 论坛
   getPosts: (category) => call('getPosts', { category }),
   getPostDetail: (postId) => call('getPostDetail', { postId }),
   createPost: (data) => call('createPost', data),
@@ -86,7 +170,7 @@ module.exports = {
   toggleLike: (postId) => call('toggleLike', { postId }),
   addComment: (postId, content) => call('addComment', { postId, content }),
 
-  // 外观（壁纸）
+  // 外观
   getAppearance: () => call('getAppearance'),
   setAppearance: (data) => call('setAppearance', data),
 
@@ -95,29 +179,29 @@ module.exports = {
   setNotice: (data) => call('setNotice', data),
   getSubscribeTemplate: () => call('getSubscribeTemplate'),
 
-  // 征集建议
+  // 建议
   createSuggestion: (data) => call('createSuggestion', data),
   getMySuggestions: () => call('getMySuggestions'),
   getSuggestions: () => call('getSuggestions'),
   markSuggestionDone: (id) => call('markSuggestionDone', { id }),
 
-  // t4: 临时锁（选座位时加锁，确认后释放）
+  // 临时锁
   acquireLock: (data) => call('acquireLock', data),
   releaseLock: (data) => call('releaseLock', data),
 
-  // 现场占用（管理员手动标记座位被现场人员占用）
+  // 现场占用
   markSeatOccupied: (data) => call('markSeatOccupied', data),
   releaseSeatOccupied: (data) => call('releaseSeatOccupied', data),
   batchMarkOccupied: (data) => call('batchMarkOccupied', data),
 
-  // t2: 座位收藏
+  // 座位收藏
   saveFavoriteSeat: (data) => call('saveFavoriteSeat', data),
   getFavoriteSeats: () => call('getFavoriteSeats'),
   removeFavoriteSeat: (roomId, seatId) => call('removeFavoriteSeat', { roomId, seatId }),
 
-  // t5: 多日连续预约
+  // 多日连续预约
   createBookingBatch: (data) => call('createBookingBatch', data),
 
-  // t8: 排行榜
+  // 排行榜
   getStudyRanking: (rankMode) => call('getStudyRanking', { rankMode })
 }

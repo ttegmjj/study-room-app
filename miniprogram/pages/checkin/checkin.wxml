@@ -98,3 +98,6 @@
 
   <view wx:else class="empty">预约记录不存在</view>
 </view>
+
+<!-- AI 悬浮球 -->
+<ai-ball />

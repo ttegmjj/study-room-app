@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "选择座位"
+  "navigationBarTitleText": "选择座位",
+  "usingComponents": {
+    "ai-ball": "/components/ai-ball/ai-ball"
+  }
 }

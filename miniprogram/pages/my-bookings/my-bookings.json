@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "我的预约",
-  "enablePullDownRefresh": true
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "ai-ball": "/components/ai-ball/ai-ball"
+  }
 }

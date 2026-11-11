@@ -29,6 +29,12 @@ App({
       api.getSubscribeTemplate().then(d => {
         this.globalData.subscribeTemplateId = (d && d.templateId) || ''
       }).catch(() => {})
+
+      // 🔥 云函数预热：静默调一次轻量 action，让云函数容器提前热起来
+      // 冷启动 1-3 秒 → 热启动 <300ms，评委演示不卡顿
+      setTimeout(() => {
+        api.getRooms().catch(() => {})
+      }, 500)
     } catch (e) {}
   },
 

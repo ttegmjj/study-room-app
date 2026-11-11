@@ -1,0 +1,187 @@
+/* components/ai-ball/ai-ball.wxss */
+
+/* ============ 悬浮球本体 ============ */
+.ai-ball {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 8rpx 32rpx rgba(102, 126, 234, 0.5),
+              0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  transform: scale(1);
+}
+
+.ai-ball:active {
+  transform: scale(0.92);
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.4);
+}
+
+.ai-ball-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.ai-ball-emoji {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+/* 外圈呼吸光环 */
+.ai-ball-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4rpx solid rgba(102, 126, 234, 0.4);
+  animation: ballPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes ballPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* ============ 对话浮层 ============ */
+.ai-panel-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-end;
+}
+
+.ai-panel {
+  width: 100%;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24rpx 24rpx 40rpx;
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.15);
+}
+
+.ai-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.ai-panel-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.ai-panel-close {
+  font-size: 36rpx;
+  color: #999;
+  padding: 8rpx 16rpx;
+}
+
+/* 预设问题 */
+.ai-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  padding: 20rpx 0;
+}
+
+.ai-preset {
+  font-size: 24rpx;
+  color: #667eea;
+  background: #f0f2ff;
+  padding: 10rpx 20rpx;
+  border-radius: 24rpx;
+  border: 1rpx solid #e0e4ff;
+}
+
+/* 输出区 */
+.ai-output {
+  flex: 1;
+  min-height: 120rpx;
+  max-height: 400rpx;
+  padding: 16rpx 0;
+}
+
+.ai-output-box {
+  background: #f7f8fc;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.ai-loading {
+  color: #999;
+  text-align: center;
+}
+
+.ai-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-empty-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 输入区 */
+.ai-input-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.ai-input {
+  flex: 1;
+  height: 72rpx;
+  background: #f5f5f7;
+  border-radius: 36rpx;
+  padding: 0 28rpx;
+  font-size: 28rpx;
+}
+
+.ai-send-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.4);
+}
+
+.ai-send-btn.disabled {
+  opacity: 0.5;
+}

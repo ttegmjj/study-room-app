@@ -31,15 +31,21 @@ Page({
     this.setData({ loading: true, output: '' })
 
     try {
-      // 1. 非流式 generateText — 最稳，跑通演示用
       const provider = wx.cloud.extend.AI.createModel('cloudbase')
-      const res = await provider.generateText({
+      const aiPromise = provider.generateText({
         model: this.data.model,
         messages: [
           { role: 'system', content: '你是「智能自习室」小程序的 AI 助手，名叫小自。回答简洁友好，不超过 100 字。' },
           { role: 'user', content: text }
         ]
       })
+
+      // 5 秒超时兜底 —— 独立 AI 页给稍长等待时间
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('AI timeout')), 5000)
+      })
+
+      const res = await Promise.race([aiPromise, timeoutPromise])
 
       // 解析返回
       let content = ''
@@ -51,8 +57,11 @@ Page({
       this.setData({ output: content || '(AI 未返回有效内容)' })
     } catch (err) {
       console.error('[AI] 错误:', err)
+      const isTimeout = err && err.message === 'AI timeout'
       this.setData({
-        output: `❌ 调用失败\n\n错误：${err && err.errMsg ? err.errMsg : err}\n\n提示：请在云开发控制台开通 AI 能力，并确认基础库版本 ≥ 3.15.1`
+        output: isTimeout
+          ? '⏱️ AI 响应较慢，请稍后再试，或换一个更简短的问题～'
+          : `❌ 调用失败\n\n错误：${err && err.errMsg ? err.errMsg : err}\n\n提示：请在云开发控制台开通 AI 能力，并确认基础库版本 ≥ 3.15.1`
       })
     } finally {
       this.setData({ loading: false })

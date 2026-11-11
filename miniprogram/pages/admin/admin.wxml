@@ -90,6 +90,10 @@
           <text class="menu-emoji-img">👤</text>
           <view class="menu-text">管理员</view>
         </view>
+        <view class="menu-item" bindtap="goTo" data-url="/pages/admin/users/users">
+          <text class="menu-emoji-img">⛔</text>
+          <view class="menu-text">用户管理</view>
+        </view>
       </view>
     </view>
   </block>

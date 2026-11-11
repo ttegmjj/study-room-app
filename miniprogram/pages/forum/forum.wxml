@@ -84,3 +84,6 @@
   <!-- 发布按钮 -->
   <view class="fab" bindtap="goToCreate">＋</view>
 </view>
+
+<!-- AI 悬浮球 -->
+<ai-ball />

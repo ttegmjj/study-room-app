@@ -142,10 +142,6 @@ Page({
     wx.navigateTo({ url: '/pages/admin/admin' })
   },
 
-  goToAIDemo() {
-    wx.navigateTo({ url: '/pages/ai-demo/ai-demo' })
-  },
-
   goToSuggestion() {
     wx.navigateTo({ url: '/pages/suggestion/suggestion' })
   },

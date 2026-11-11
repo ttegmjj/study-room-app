@@ -20,6 +20,7 @@
     "pages/suggestion/suggestion",
     "pages/admin/suggestions/suggestions",
     "pages/admin/admins/admins",
+    "pages/admin/users/users",
     "pages/ai-demo/ai-demo"
   ],
   "window": {

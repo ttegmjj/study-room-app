@@ -1,0 +1,82 @@
+<!-- components/ai-ball/ai-ball.wxml -->
+
+<!-- 悬浮球本体（fixed 全屏悬浮，使用 catchtouch 阻止冒泡） -->
+<view
+  wx:if="{{showBall}}"
+  class="ai-ball"
+  catchtouchstart="onTouchStart"
+  catchtouchmove="onTouchMove"
+  catchtouchend="onTouchEnd"
+  style="left: {{ballX}}px; top: {{ballY}}px; width: {{ballSize}}px; height: {{ballSize}}px; margin-left: -{{ballSize/2}}px; margin-top: -{{ballSize/2}}px;"
+>
+  <view class="ai-ball-inner">
+    <text class="ai-ball-emoji">🤖</text>
+  </view>
+  <view class="ai-ball-ring"></view>
+</view>
+
+<!-- 对话浮层（点击悬浮球打开） -->
+<view
+  wx:if="{{showPanel}}"
+  class="ai-panel-mask"
+  catchtap="closePanel"
+>
+  <view class="ai-panel" catchtap="">
+    <!-- 头部 -->
+    <view class="ai-panel-head">
+      <text class="ai-panel-title">🤖 AI 小自</text>
+      <text class="ai-panel-close" catchtap="closePanel">✕</text>
+    </view>
+
+    <!-- 预设问题快捷入口 -->
+    <view class="ai-presets">
+      <view
+        class="ai-preset"
+        wx:for="{{['帮我推荐自习时间段','怎样高效备考','学习累了怎么调整']}}"
+        wx:key="*this"
+        data-text="{{item}}"
+        catchtap="onPreset"
+      >
+        💡 {{item}}
+      </view>
+    </view>
+
+    <!-- 输出区 -->
+    <scroll-view scroll-y class="ai-output" wx:if="{{output}}">
+      <view class="ai-output-box">
+        <text>{{output}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- 加载态 -->
+    <view class="ai-output" wx:if="{{loading}}">
+      <view class="ai-output-box ai-loading">
+        <text>🤔 思考中...</text>
+      </view>
+    </view>
+
+    <!-- 空态提示 -->
+    <view class="ai-output ai-empty" wx:if="{{!loading && !output}}">
+      <text class="ai-empty-text">👋 我是 AI 小自，有问题随时问我～</text>
+    </view>
+
+    <!-- 输入区 -->
+    <view class="ai-input-row">
+      <input
+        class="ai-input"
+        placeholder="问问 AI ..."
+        value="{{input}}"
+        bindinput="onInput"
+        confirm-type="send"
+        bindconfirm="sendAI"
+        catchtap=""
+      />
+      <view
+        class="ai-send-btn {{loading ? 'disabled' : ''}}"
+        catchtap="sendAI"
+      >
+        {{loading ? '...' : '✨'}}
+      </view>
+    </view>
+  </view>
+</view>

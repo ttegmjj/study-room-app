@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "发布帖子"
+  "navigationBarTitleText": "发布帖子",
+  "usingComponents": {
+    "ai-ball": "/components/ai-ball/ai-ball"
+  }
 }

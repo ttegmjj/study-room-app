@@ -51,6 +51,14 @@ async function autoCancelOverdueBookings() {
 
   let cancelledCount = 0
   for (const b of res.data) {
+    // 管理员豁免：不自动取消管理员的预约
+    try {
+      const uRes = await db.collection('users').where({ _openid: b._openid }).get()
+      if (uRes.data[0] && uRes.data[0].isAdmin) {
+        console.log(`[autoCancel] 跳过管理员预约: ${b._id}`)
+        continue
+      }
+    } catch (e) {}
     const wasCancelled = await autoCancelIfTimeout({ _id: b._id, data: b })
     if (wasCancelled) {
       cancelledCount += 1
@@ -119,13 +127,19 @@ async function sendStartReminders() {
   return { code: 0, data: { reminded: sent } }
 }
 
-/** 记录一次爽约；连续 3 次则禁止预约 1 天（正常签到后清零） */
+/** 记录一次爽约；连续 3 次则禁止预约 1 天（正常签到后清零）
+ *  管理员豁免：isAdmin 用户不累计爽约、不受禁约限制 */
 async function recordNoShow(openid) {
   if (!openid) return
   try {
     const res = await db.collection('users').where({ _openid: openid }).get()
     if (res.data.length === 0) return
     const u = res.data[0]
+    // 管理员豁免：不累计爽约
+    if (u.isAdmin) {
+      console.log(`[noShow] ${openid} 是管理员，豁免爽约`)
+      return
+    }
     const count = (u.noShowCount || 0) + 1
     const shouldBan = count >= 3
     await db.collection('users').doc(u._id).update({
@@ -711,10 +725,22 @@ async function createBooking(params, { OPENID }) {
     user = userRes.data[0]
   }
 
-  // 爽约惩罚：处于限制期内不允许预约
-  if (user.banUntil && new Date(user.banUntil).getTime() > Date.now()) {
-    const hours = Math.ceil((new Date(user.banUntil).getTime() - Date.now()) / 3600000)
-    return { code: 403, message: `因连续爽约，你被限制预约，约 ${hours} 小时后恢复` }
+  // 爽约惩罚：处于限制期内不允许预约；已过期则自动清除（自愈）
+  // 管理员豁免：isAdmin 用户直接跳过禁约检查
+  const isAdminUser = !!user.isAdmin
+  if (!isAdminUser && user.banUntil) {
+    const banMs = new Date(user.banUntil).getTime() - Date.now()
+    if (banMs > 0) {
+      const hours = Math.ceil(banMs / 3600000)
+      return { code: 403, message: `因连续爽约，你被限制预约，约 ${hours} 小时后恢复` }
+    } else {
+      // 过期了 → 自动解封，清掉 banUntil 和 noShowCount
+      try {
+        await db.collection('users').doc(user._id).update({
+          data: { banUntil: null, noShowCount: 0, updatedAt: db.serverDate() }
+        })
+      } catch (e) {}
+    }
   }
 
   // 检查座位是否已被预约
@@ -1061,6 +1087,64 @@ async function getAdminCandidates({ keyword }, { OPENID }) {
   list.sort((a, b) => (b.isAdmin ? 1 : 0) - (a.isAdmin ? 1 : 0))
 
   return { code: 0, data: list }
+}
+
+/** 管理员用户管理：列出全部用户（含爽约次数、禁约状态），支持筛选连续爽约 >= threshold 的 */
+async function adminListUsers({ threshold }, { OPENID }) {
+  const isAdmin = await checkIsAdmin(OPENID)
+  if (!isAdmin) return { code: 403, message: '无权限' }
+
+  const res = await db.collection('users').orderBy('createdAt', 'desc').limit(200).get()
+  const thr = Number(threshold) || 0
+
+  const list = res.data
+    .filter(u => u._openid)
+    .map(u => {
+      const banMs = u.banUntil ? new Date(u.banUntil).getTime() - Date.now() : 0
+      return {
+        _id: u._id,
+        openid: u._openid,
+        name: u.name || u.nickName || '未命名用户',
+        avatar: u.avatar || '',
+        isAdmin: !!u.isAdmin,
+        isSelf: u._openid === OPENID,
+        noShowCount: u.noShowCount || 0,
+        banHours: banMs > 0 ? Math.ceil(banMs / 3600000) : 0,
+        banned: banMs > 0
+      }
+    })
+    .filter(u => u.isAdmin === false) // 管理员不参与爽约筛选
+    .filter(u => thr > 0 ? u.noShowCount >= thr || u.banned : true) // 筛选
+    .sort((a, b) => (b.noShowCount + (b.banned ? 100 : 0)) - (a.noShowCount + (a.banned ? 100 : 0))) // 爽约重的排前面
+
+  return { code: 0, data: list }
+}
+
+/** 管理员删除用户（连带删除该用户的预约记录） */
+async function adminDeleteUser({ openid }, { OPENID }) {
+  const isAdmin = await checkIsAdmin(OPENID)
+  if (!isAdmin) return { code: 403, message: '无权限' }
+  if (!openid) return { code: 400, message: '缺少用户标识' }
+  if (openid === OPENID) return { code: 400, message: '不能删除自己' }
+
+  // 先查用户
+  const userRes = await db.collection('users').where({ _openid: openid }).get()
+  if (userRes.data.length === 0) return { code: 404, message: '未找到该用户' }
+  const u = userRes.data[0]
+  if (u.isAdmin) return { code: 400, message: '不能删除管理员，请先取消其管理员权限' }
+
+  // 连带删除预约记录
+  try {
+    const bookingsRes = await db.collection('bookings').where({ _openid: openid }).remove()
+    console.log(`[adminDeleteUser] 已删除 ${bookingsRes.stats.removed} 条预约`)
+  } catch (e) {
+    console.warn('[adminDeleteUser] 删预约失败:', e.message)
+  }
+
+  // 删除用户
+  await db.collection('users').doc(u._id).remove()
+
+  return { code: 0, message: `已删除用户「${u.name || u.nickName || ''}」及其预约记录` }
 }
 
 async function adminGetBookings(params, { OPENID }) {
@@ -2034,6 +2118,8 @@ exports.main = async (event, context) => {
       case 'setAdmin': return await setAdmin(params, wxContext)
       case 'getAdminCandidates': return await getAdminCandidates(params, wxContext)
       case 'adminSetUserBan': return await adminSetUserBan(params, wxContext)
+      case 'adminListUsers': return await adminListUsers(params, wxContext)
+      case 'adminDeleteUser': return await adminDeleteUser(params, wxContext)
       case 'adminExportBookings': return await adminExportBookings(params, wxContext)
       case 'deleteMyBookings': return await deleteMyBookings(params, wxContext)
       case 'adminGetBookings': return await adminGetBookings(params, wxContext)

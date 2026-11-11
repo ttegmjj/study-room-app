@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "自习室预约",
   "enablePullDownRefresh": true,
-  "backgroundTextStyle": "dark"
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "ai-ball": "/components/ai-ball/ai-ball"
+  }
 }

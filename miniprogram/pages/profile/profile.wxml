@@ -131,12 +131,6 @@
 
   <!-- ========== 下方通用菜单 ========== -->
   <view class="card menu-card">
-    <view class="menu-item" bindtap="goToAIDemo">
-      <text class="menu-icon">🤖</text>
-      <text class="menu-label">AI 智能助手</text>
-      <text class="menu-arrow">›</text>
-    </view>
-    <view class="menu-divider"></view>
     <view class="menu-item" bindtap="goToSuggestion">
       <text class="menu-icon">💬</text>
       <text class="menu-label">征集建议</text>
@@ -170,3 +164,6 @@
   <!-- 版本信息 -->
   <view class="version">v1.0.0</view>
 </view>
+
+<!-- AI 悬浮球 -->
+<ai-ball />

@@ -157,3 +157,6 @@
     <view class="notice-modal-btn" bindtap="closeNotice">知道了</view>
   </view>
 </view>
+
+<!-- AI 悬浮球 -->
+<ai-ball />

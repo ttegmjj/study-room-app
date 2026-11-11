@@ -112,3 +112,6 @@
 
   <view class="tip">请文明发言，禁止发布广告或违规内容</view>
 </view>
+
+<!-- AI 悬浮球 -->
+<ai-ball />

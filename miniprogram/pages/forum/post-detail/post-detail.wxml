@@ -87,3 +87,6 @@
     <view class="send-btn {{commentText ? 'send-active' : ''}}" bindtap="submitComment">发送</view>
   </view>
 </view>
+
+<!-- AI 悬浮球 -->
+<ai-ball />
