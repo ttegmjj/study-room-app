@@ -1,5 +1,9 @@
 // components/ai-ball/ai-ball.js
 // 全屏可拖拽的 AI 悬浮球 —— 点击弹出 AI 对话浮层
+<<<<<<< HEAD
+=======
+const FALLBACK_REPLY = 'AI 暂时没反应过来，换个简短问题试试？或者试试"帮我推荐自习时间段"。'
+>>>>>>> origin/main
 const PRESET_QUESTIONS = [
   '帮我推荐一个自习好时间段',
   '怎样才能高效备考？',
@@ -60,9 +64,19 @@ Component({
       let ny = this.data.ballY + dy
       nx = Math.max(half + 8, Math.min(this.data.winW - half - 8, nx))
       ny = Math.max(half + 80, Math.min(this.data.winH - half - 20, ny))
+<<<<<<< HEAD
       this.setData({ ballX: nx, ballY: ny, lastTouchX: t.clientX, lastTouchY: t.clientY, moved: true })
+=======
+
+      this.setData({
+        ballX: nx, ballY: ny,
+        lastTouchX: t.clientX, lastTouchY: t.clientY,
+        moved: true
+      })
+>>>>>>> origin/main
     },
     onTouchEnd() {
+<<<<<<< HEAD
       if (!this.data.moved) { this.onBallTap(); return }
       const half = this.data.ballSize / 2
       const targetX = this.data.ballX < this.data.winW / 2 ? half + 12 : this.data.winW - half - 12
@@ -93,6 +107,26 @@ Component({
         '- 也可以聊生活、学习、情感话题，结尾可以自然引导到自习上'
       ].join('\n')
     },
+=======
+      if (!this.data.moved) {
+        this.onBallTap()
+        return
+      }
+      const half = this.data.ballSize / 2
+      const targetX = this.data.ballX < this.data.winW / 2
+        ? half + 12 : this.data.winW - half - 12
+      this.setData({ ballX: targetX })
+    },
+
+    // ============ 点击 → 打开面板 ============
+    onBallTap() { this.setData({ showPanel: true }) },
+    closePanel() { this.setData({ showPanel: false }) },
+
+    // ============ AI 对话 ============
+    onInput(e) { this.setData({ input: e.detail.value }) },
+    onPreset(e) { this.setData({ input: e.currentTarget.dataset.text }) },
+    onClear() { this.setData({ input: '', output: '' }) },
+>>>>>>> origin/main
 
     async sendAI() {
       const text = (this.data.input || '').trim()
@@ -102,11 +136,54 @@ Component({
       this.setData({ loading: true, output: '' })
 
       try {
+<<<<<<< HEAD
         // 1. 检查 AI API 是否存在
         if (!wx.cloud || !wx.cloud.extend || !wx.cloud.extend.AI) {
           this.setData({ output: '❌ AI 能力不可用。请确认：\n1. 基础库 ≥ 3.15.0\n2. 云开发控制台已开通 AI 服务' })
           this.setData({ loading: false })
           return
+=======
+        const provider = wx.cloud.extend.AI.createModel('cloudbase')
+        const systemPrompt = [
+          '你是"智能自习室"小程序的 AI 助手小自。',
+          '',
+          '## 绝对不要做的事',
+          '- 绝对不要偏离用户问的主题。用户问备考就聊备考，问心态就聊心态，绝对不要突然开始推荐座位！',
+          '- 绝对不要提"靠窗座位""过道旁""选座"等座位相关内容，除非用户明确在问座位或自习室预约。',
+          '- 绝对不要用"根据您的需求""好的"这类开场白。',
+          '',
+          '## 回答规则',
+          '- 用户问什么就答什么，直接给答案。',
+          '- 语气像朋友聊天，自然口语化。',
+          '- 控制在 80 字以内。',
+          '- 用 emoji 点缀但不要太多。',
+          '',
+          '## 你的能力范围',
+          '- 自习相关：选时间、备考方法、专注技巧、学习心态、时间管理、效率工具',
+          '- 也可以聊生活/学习/情感话题，但结尾可以自然引导到自习上'
+        ].join('\n')
+
+        const aiPromise = provider.generateText({
+          model: 'deepseek-v4-flash',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: text }
+          ]
+        })
+
+        // 5 秒超时兜底
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('AI timeout')), 5000)
+        })
+
+        const res = await Promise.race([aiPromise, timeoutPromise])
+
+        let content = ''
+        if (res && res.choices && res.choices[0]) {
+          content = res.choices[0].message.content || res.choices[0].message
+        } else if (typeof res === 'string') {
+          content = res
+>>>>>>> origin/main
         }
 
         const provider = wx.cloud.extend.AI.createModel('cloudbase')
