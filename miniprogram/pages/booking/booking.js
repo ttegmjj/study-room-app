@@ -171,7 +171,7 @@ Page({
       // AI 尝试（8s 超时）
       const provider = wx.cloud.extend.AI.createModel('cloudbase')
       const aiPromise = provider.generateText({
-        model: 'deepseek-v4-flash',
+        model: 'deepseek/deepseek-flash',
         messages: [
           { role: 'system', content: '你是自习室选座助手。简洁直接，60字内。' },
           { role: 'user', content: `${roomName} ${selectedDate} ${selectedStartTime}-${selectedEndTime} 共${total}座 空${available.length} 已约${bookedCount} 现场${occupyCount} 常坐${favoriteCodes}。给我紧张度+选座建议+鼓励。` }

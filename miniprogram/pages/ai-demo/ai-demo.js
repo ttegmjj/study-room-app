@@ -4,7 +4,7 @@ Page({
     input: '',
     output: '',
     loading: false,
-    model: 'deepseek-v4-flash',
+    model: 'deepseek/deepseek-flash',  // V4-Flash 原厂直供已下线，迁移到 V4.1-Flash
     presets: [
       '帮我推荐一个适合考研自习的时间段',
       '根据我的预约历史推荐座位偏好',

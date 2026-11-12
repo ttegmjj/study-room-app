@@ -133,7 +133,7 @@ Component({
         }
 
         const provider = wx.cloud.extend.AI.createModel('cloudbase')
-        const model = 'deepseek-v4-flash'
+        const model = 'deepseek/deepseek-flash'  // V4-Flash 原厂直供已下线，迁移到 V4.1-Flash
         const messages = [
           { role: 'system', content: '你是自习室AI助手小自。回答简洁直接，80字内，语气友好。' },
           { role: 'user', content: text }
