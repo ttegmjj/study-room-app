@@ -282,7 +282,12 @@ async function getSeats({ roomId, date, startTime, endTime }) {
   }).get()
 
   // 传了时段则只算与所选时段重叠的预约；否则按整天算
+  // 同时过滤：已结束的预约不算占用（用户忘了 checkOut 也不影响新预约）
+  const nowMs = Date.now()
   const occupied = bookingsRes.data.filter(b => {
+    // 已结束的预约不算占用
+    const endMs = parseBeijingDate(`${b.date}T${b.endTime}:00`).getTime()
+    if (endMs <= nowMs) return false
     if (!startTime || !endTime) return true
     return b.startTime < endTime && b.endTime > startTime
   })
@@ -311,24 +316,32 @@ async function getSeats({ roomId, date, startTime, endTime }) {
   return { code: 0, data: { seats: enriched, bookedSeats, occupySeats } }
 }
 
-/** 某座位某天的有效预约时段明细（座位时间格子弹窗用） */
+/** 某座位某天的有效预约时段明细（座位时间格子弹窗用）
+ *  只返回未结束的有效预约；已结束但用户未 checkOut 的预约不计入占用 */
 async function getSeatBookings({ roomId, seatId, date }) {
   const res = await db.collection('bookings').where({
     roomId, seatId, date,
     status: _.in(['booked', 'checkedin'])
   }).get()
 
+  // 过滤：只保留结束时间还没到的预约（已结束但未 checkOut 的不算占用）
+  const nowMs = Date.now()
+  const slots = res.data
+    .filter(b => {
+      const endMs = parseBeijingDate(`${b.date}T${b.endTime}:00`).getTime()
+      return endMs > nowMs  // 结束时间还没到才视为占用
+    })
+    .map(b => ({ startTime: b.startTime, endTime: b.endTime }))
+
   // 若该座位被现场占用（kind='occupy'），返回全天占用标记
-  const now = Date.now()
   let occupied = false
   try {
     const occupyRes = await db.collection('locks').where({
-      roomId, seatId, date, kind: 'occupy', expireAt: _.gt(now)
+      roomId, seatId, date, kind: 'occupy', expireAt: _.gt(nowMs)
     }).limit(1).get()
     occupied = occupyRes.data.length > 0
   } catch { /* locks 不存在 → 视为无现场占用 */ }
 
-  const slots = res.data.map(b => ({ startTime: b.startTime, endTime: b.endTime }))
   return { code: 0, data: { slots, occupied } }
 }
 
