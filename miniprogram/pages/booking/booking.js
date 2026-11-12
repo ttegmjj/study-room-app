@@ -151,66 +151,45 @@ Page({
 
     this.setData({ aiLoading: true, aiRecommend: '' })
 
-    // 预设兜底文案（AI 超时时直接给，评委演示秒级响应）
-    const FALLBACK_TEXT = '💡 建议：优先选靠窗或过道旁的座位，方便进出；若追求安静选靠里位置。祝复习顺利！✨'
-
     try {
-      // 整理当前自习室座位分布 —— 让 AI 知道哪些座位空着、哪些有约、哪些被现场占用
       const flatSeats = []
       ;(seats || []).forEach(g => flatSeats.push(...(g.seats || [])))
       const total = flatSeats.length
       const available = flatSeats.filter(s => !s.booked && !s.occupy)
       const bookedCount = flatSeats.filter(s => s.booked).length
       const occupyCount = flatSeats.filter(s => s.occupy).length
-
       const nearbyAisles = available.filter(s => s.gapAfter || s.rowGapBefore).length
       const favoriteCodes = (favoriteSeats || []).map(f => f.seatCode).join(', ') || '无'
 
-      const prompt = [
-        `自习室：${roomName}`,
-        `时段：${selectedDate} ${selectedStartTime}-${selectedEndTime}`,
-        `座位情况：共 ${total} 座，空 ${available.length}（含过道旁 ${nearbyAisles}），已约 ${bookedCount}，现场占 ${occupyCount}`,
-        `我常坐：${favoriteCodes}`,
-        '',
-        '请直接给我：① 紧张度（宽松/一般/紧张）② 选座建议（靠过道？靠窗？靠里？）③ 1句鼓励的话。控制在60字内，不要分点编号。'
-      ].join('\n')
+      // 快速动态推荐（不依赖 AI，秒出）
+      const tight = available.length < total * 0.3
+      const level = tight ? '紧张' : (available.length > total * 0.7 ? '宽松' : '一般')
+      let tip = tight ? '空位紧张，建议动作快！' : '空位充足，放心选～'
+      let seatTip = nearbyAisles > 0 ? `过道旁还剩 ${nearbyAisles} 个，进出方便` : '靠里位置更安静'
+      const dynamicFallback = `${level}｜${tip} ${seatTip} ✨`
 
+      // AI 尝试（8s 超时）
       const provider = wx.cloud.extend.AI.createModel('cloudbase')
       const aiPromise = provider.generateText({
         model: 'deepseek-v4-flash',
         messages: [
-          {
-            role: 'system',
-            content: [
-              '你是自习室选座助手。用户正在选自习座位，你需要根据提供的数据给选座建议。',
-              '直接回答，不要说"好的"、"根据数据"这类套话。',
-              '先告诉用户现在空位多不多，再告诉他什么座位好。',
-              '总字数控制在 60 字以内。'
-            ].join('\n')
-          },
-          { role: 'user', content: prompt }
+          { role: 'system', content: '你是自习室选座助手。简洁直接，60字内。' },
+          { role: 'user', content: `${roomName} ${selectedDate} ${selectedStartTime}-${selectedEndTime} 共${total}座 空${available.length} 已约${bookedCount} 现场${occupyCount} 常坐${favoriteCodes}。给我紧张度+选座建议+鼓励。` }
         ]
       })
-
-      // 8 秒超时兜底 —— 给 AI 足够时间，超时再给预设文案
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('AI timeout')), 8000)
       })
-
       const res = await Promise.race([aiPromise, timeoutPromise])
+
       let content = ''
       if (res && res.choices && res.choices[0]) content = res.choices[0].message.content || res.choices[0].message
       else if (typeof res === 'string') content = res
-
-      this.setData({ aiRecommend: content || FALLBACK_TEXT })
+      this.setData({ aiRecommend: content || dynamicFallback })
     } catch (err) {
       console.error('[AI recommend]', err)
-      // 超时或任何错误 → 给预设文案，不让 UI 空着
-      this.setData({
-        aiRecommend: err && err.message === 'AI timeout'
-          ? FALLBACK_TEXT
-          : `AI 暂时走神了…已为您准备推荐：${FALLBACK_TEXT}`
-      })
+      // AI 调不通（403/超时/网络错）→ 给动态推荐
+      this.setData({ aiRecommend: dynamicFallback })
     } finally {
       this.setData({ aiLoading: false })
     }
