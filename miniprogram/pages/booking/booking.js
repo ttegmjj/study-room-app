@@ -192,9 +192,9 @@ Page({
         ]
       })
 
-      // 3 秒超时兜底 —— AI 慢就直接给预设文案，评委不尴尬
+      // 8 秒超时兜底 —— 给 AI 足够时间，超时再给预设文案
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('AI timeout')), 3000)
+        setTimeout(() => reject(new Error('AI timeout')), 8000)
       })
 
       const res = await Promise.race([aiPromise, timeoutPromise])
