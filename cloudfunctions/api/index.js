@@ -661,9 +661,9 @@ async function createBooking(params, { OPENID }) {
     return { code: 400, message: '该时段已结束，请选择未来的时间' }
   }
 
-  // 仅允许整点时段（如 09:00）
-  if (!/^\d{2}:00$/.test(startTime) || !/^\d{2}:00$/.test(endTime) || startTime >= endTime) {
-    return { code: 400, message: '预约时间需为整点，且结束晚于开始（如 09:00-11:00）' }
+  // 仅允许 30 分钟粒度时段（如 09:00、09:30）
+  if (!/^\d{2}:(00|30)$/.test(startTime) || !/^\d{2}:(00|30)$/.test(endTime) || startTime >= endTime) {
+    return { code: 400, message: '预约时间需为整点或半点（如 09:00-10:30）' }
   }
 
   // 必须在自习室营业时间内
