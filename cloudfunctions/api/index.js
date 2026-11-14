@@ -500,7 +500,7 @@ async function aiChat({ text }) {
     const ai = cloud.ai()
     const model = ai.createModel('cloudbase')
     const res = await model.generateText({
-      model: 'deepseek/deepseek-flash',
+      model: 'deepseek-v4.1-flash-1017',
       temperature: 0.7,
       messages: [
         { role: 'system', content: '你是自习室AI助手小自。回答简洁直接，80字内，语气友好。' },
@@ -524,7 +524,7 @@ async function aiRecommendSeat(data) {
     const ai = cloud.ai()
     const model = ai.createModel('cloudbase')
     const res = await model.generateText({
-      model: 'deepseek/deepseek-flash',
+      model: 'deepseek-v4.1-flash-1017',
       temperature: 0.5,
       messages: [
         { role: 'system', content: '你是自习室选座助手。简洁直接，60字内。' },
