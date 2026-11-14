@@ -225,7 +225,7 @@
           class="modal-fav-btn {{selectedSeat._favorite ? 'modal-fav-on' : 'modal-fav-off'}}"
           bindtap="toggleFavoriteModal"
         >
-          ⭐ {{selectedSeat._favorite ? '已收藏，点一下取消' : '收藏这个座位'}}
+          ⭐ {{selectedSeat._favorite ? '已收藏' : '收藏这个座位'}}
         </view>
       </view>
 

@@ -358,12 +358,11 @@ Page({
     this.setData({ modalLoading: false })
   },
 
-  // t2: 收藏 / 取消收藏（长按座位 或 底部栏收藏按钮都调这个）
+  // t2: 收藏 / 取消收藏
   async toggleFavorite(e) {
     const { seatid, seatcode } = e.currentTarget.dataset
     const exists = this.data.favoriteSeats.some(s => s.roomId === this.data.roomId && s.seatId === seatid)
 
-    /** 同步更新 selectedSeat._favorite，让底部按钮立刻变状态 */
     const syncSelectedSeatFav = (fav) => {
       if (this.data.selectedSeat && this.data.selectedSeat.id === seatid) {
         this.data.selectedSeat._favorite = fav
@@ -372,22 +371,14 @@ Page({
     }
 
     if (exists) {
-      wx.showModal({
-        title: '取消收藏',
-        content: `确定取消收藏 ${seatcode} 号座位？`,
-        success: async (res) => {
-          if (res.confirm) {
-            try {
-              await api.removeFavoriteSeat(this.data.roomId, seatid)
-              this.loadFavoriteSeats()
-              syncSelectedSeatFav(false)
-              wx.showToast({ title: '已取消收藏', icon: 'success' })
-            } catch (err) {
-              wx.showToast({ title: err.message || '操作失败', icon: 'none' })
-            }
-          }
-        }
-      })
+      try {
+        await api.removeFavoriteSeat(this.data.roomId, seatid)
+        this.loadFavoriteSeats()
+        syncSelectedSeatFav(false)
+        wx.showToast({ title: '已取消收藏', icon: 'success' })
+      } catch (err) {
+        wx.showToast({ title: err.message || '操作失败', icon: 'none' })
+      }
     } else {
       try {
         await api.saveFavoriteSeat({

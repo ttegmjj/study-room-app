@@ -41,24 +41,15 @@ Page({
     })
   },
 
-  removeFavorite(e) {
-    const { roomid, seatid, seatcode } = e.currentTarget.dataset
-    wx.showModal({
-      title: '取消收藏',
-      content: `确定取消收藏座位 ${seatcode || ''}？`,
-      confirmColor: '#ff6b6b',
-      success: async (res) => {
-        if (res.confirm) {
-          try {
-            await api.removeFavoriteSeat(roomid, seatid)
-            wx.showToast({ title: '已取消收藏', icon: 'success' })
-            this.loadFavorites()
-          } catch (err) {
-            wx.showToast({ title: err.message || '操作失败', icon: 'none' })
-          }
-        }
-      }
-    })
+  async removeFavorite(e) {
+    const { roomid, seatid } = e.currentTarget.dataset
+    try {
+      await api.removeFavoriteSeat(roomid, seatid)
+      wx.showToast({ title: '已取消收藏', icon: 'success' })
+      this.loadFavorites()
+    } catch (err) {
+      wx.showToast({ title: err.message || '操作失败', icon: 'none' })
+    }
   },
 
   async goToFirstRoom() {
