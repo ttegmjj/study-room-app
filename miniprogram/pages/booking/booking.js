@@ -179,7 +179,7 @@ Page({
       let seatTip = nearbyAisles > 0 ? `过道旁还剩 ${nearbyAisles} 个，进出方便` : '靠里位置更安静'
       const dynamicFallback = `${level}｜${tip} ${seatTip} ✨`
 
-      // AI 尝试（streamText + 8s 超时）
+      // AI 尝试（streamText + 8s 超时 + 兼容所有基础库版本，不用 for await）
       const model = wx.cloud.extend.AI.createModel('cloudbase')
       const aiPromise = (async () => {
         const res = await model.streamText({
@@ -192,7 +192,12 @@ Page({
           }
         })
         let content = ''
-        for await (const chunk of res.textStream) { content += chunk }
+        // 手动迭代 async iterator，彻底避免 for await 在部分机型 SyntaxError 闪退
+        try {
+          const ASYNC_ITER = typeof Symbol !== 'undefined' && Symbol.asyncIterator ? Symbol.asyncIterator : '@@asyncIterator'
+          const iter = res.textStream && res.textStream[ASYNC_ITER] ? res.textStream[ASYNC_ITER]() : null
+          if (iter) { let r; while (!(r = await iter.next()).done) { content += (r.value || '') } }
+        } catch (_) {}
         return content
       })()
       const timeoutPromise = new Promise((_, reject) => {

@@ -139,11 +139,15 @@ Component({
           { role: 'user', content: text }
         ]
 
-        // streamText + 8s 超时
+        // streamText + 8s 超时（手动迭代 iterator，防闪退）
         const aiPromise = (async () => {
           const res = await model.streamText({ data: { model: modelName, messages } })
           let content = ''
-          for await (const chunk of res.textStream) { content += chunk }
+          try {
+            const ASYNC_ITER = typeof Symbol !== 'undefined' && Symbol.asyncIterator ? Symbol.asyncIterator : '@@asyncIterator'
+            const iter = res.textStream && res.textStream[ASYNC_ITER] ? res.textStream[ASYNC_ITER]() : null
+            if (iter) { let r; while (!(r = await iter.next()).done) { content += (r.value || '') } }
+          } catch (_) {}
           return content
         })()
         const timeoutPromise = new Promise((_, reject) => {
