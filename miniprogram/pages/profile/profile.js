@@ -224,17 +224,8 @@ Page({
     }
   },
 
-  /** 菜单"我的收藏座位"入口 */
+  /** 菜单"收藏"入口 */
   goToFavBookings() {
-    const favs = this.data.favoriteSeats
-    if (!favs || favs.length === 0) {
-      this.goToFirstRoom()
-      return
-    }
-    // 有收藏 → 直接用第一个收藏跳预约页
-    const f = favs[0]
-    wx.navigateTo({
-      url: `/pages/booking/booking?roomId=${f.roomId}&roomName=${encodeURIComponent(f.roomName)}&seatId=${f.seatId}&seatCode=${encodeURIComponent(f.seatCode)}`
-    })
+    wx.navigateTo({ url: '/pages/favorites/favorites' })
   },
 })

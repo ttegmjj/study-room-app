@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "收藏",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "ai-ball": "/components/ai-ball/ai-ball"
+  }
+}

@@ -1,0 +1,64 @@
+<!-- pages/favorites/favorites.wxml -->
+<view wx:if="{{wallpaper && wallpaper.hasWallpaper}}" class="wallpaper">
+  <image wx:if="{{wallpaper.isCustom || wallpaper.isImage}}" class="wallpaper-image" src="{{wallpaper.imageSrc}}" mode="aspectFill" />
+  <view wx:else class="wallpaper-gradient" style="{{wallpaper.bgStyle}}"></view>
+  <view class="wallpaper-overlay" style="{{wallpaper.overlayStyle}}"></view>
+</view>
+
+<view class="container">
+
+  <!-- 收藏列表 -->
+  <block wx:if="{{!loading}}">
+    <block wx:if="{{favorites.length > 0}}">
+      <view
+        wx:for="{{favorites}}"
+        wx:key="seatId"
+        class="card fav-card"
+      >
+        <view class="fav-top flex-between">
+          <view class="fav-room ellipsis">{{item.roomName}}</view>
+          <view class="fav-tag">⭐ 已收藏</view>
+        </view>
+
+        <view class="fav-info">
+          <view class="info-row">
+            <text class="info-icon">🪑</text>
+            <text class="info-text">座位 {{item.seatCode}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-icon">🏷️</text>
+            <text class="info-text">自习室 {{item.roomName}}</text>
+          </view>
+        </view>
+
+        <view class="divider"></view>
+
+        <view class="fav-actions flex-between">
+          <view class="btn-ghost"
+            data-roomid="{{item.roomId}}"
+            data-seatid="{{item.seatId}}"
+            data-seatcode="{{item.seatCode}}"
+            catchtap="removeFavorite">取消收藏</view>
+          <view class="btn-primary-sm"
+            data-roomid="{{item.roomId}}"
+            data-roomname="{{item.roomName}}"
+            data-seatid="{{item.seatId}}"
+            data-seatcode="{{item.seatCode}}"
+            bindtap="goToBooking">去预约</view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="empty">
+      <view class="empty-icon">⭐</view>
+      <view>还没有收藏座位</view>
+      <view class="empty-hint">去自习室选个座位点 ⭐ 收藏吧</view>
+      <view class="empty-btn" bindtap="goToFirstRoom">去自习室看看</view>
+    </view>
+  </block>
+
+  <view wx:else class="loading">加载中...</view>
+</view>
+
+<!-- AI 悬浮球 -->
+<ai-ball />

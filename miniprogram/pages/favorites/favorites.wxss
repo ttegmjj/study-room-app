@@ -1,0 +1,77 @@
+/* pages/favorites/favorites.wxss */
+
+.fav-card {
+  padding-bottom: 20rpx;
+}
+
+.fav-top {
+  margin-bottom: 16rpx;
+}
+
+.fav-room {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.fav-tag {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #c0392b;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+}
+
+.fav-info {
+  background: #f8f9fb;
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+}
+
+.info-row {
+  font-size: 26rpx;
+  color: #555;
+  padding: 4rpx 0;
+}
+
+.info-icon {
+  margin-right: 12rpx;
+}
+
+.fav-actions {
+  margin-top: 10rpx;
+}
+
+.btn-ghost {
+  color: #999;
+  font-size: 26rpx;
+  padding: 10rpx 20rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 30rpx;
+}
+
+.btn-primary-sm {
+  background: #4A90D9;
+  color: #fff;
+  padding: 12rpx 36rpx;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+}
+
+.empty-hint {
+  font-size: 24rpx;
+  color: #bbb;
+  margin-top: 8rpx;
+}
+
+.empty-btn {
+  margin-top: 28rpx;
+  padding: 16rpx 48rpx;
+  background: #4A90D9;
+  color: #fff;
+  font-size: 26rpx;
+  border-radius: 30rpx;
+}

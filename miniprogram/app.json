@@ -21,7 +21,8 @@
     "pages/admin/suggestions/suggestions",
     "pages/admin/admins/admins",
     "pages/admin/users/users",
-    "pages/ai-demo/ai-demo"
+    "pages/ai-demo/ai-demo",
+    "pages/favorites/favorites"
   ],
   "window": {
     "backgroundTextStyle": "light",
