@@ -127,9 +127,10 @@ Component({
 
       try {
         const api = require('../../utils/api.js')
-        const res = await api.aiChat(text)
-        if (res && res.code === 0 && res.data) {
-          this.setData({ output: res.data })
+        // call() 已经把 result.data 拆出来了，res 直接就是文本字符串
+        const textRes = await api.aiChat(text)
+        if (textRes && typeof textRes === 'string' && textRes.trim()) {
+          this.setData({ output: textRes.trim() })
         } else {
           this.setData({ output: '这个问题我还在学习中 📚 试试"备考方法""推荐时段""累了怎么调整"？' })
         }

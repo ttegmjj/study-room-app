@@ -181,14 +181,15 @@ Page({
 
       // AI 尝试（走云函数，稳定）
       try {
-        const aiRes = await api.aiRecommendSeat({
+        // call() 已经把 result.data 拆出来了，res 直接就是文本
+        const textRes = await api.aiRecommendSeat({
           roomName, date: selectedDate,
           startTime: selectedStartTime, endTime: selectedEndTime,
           total, available: available.length, booked: bookedCount,
           occupy: occupyCount, favoriteCodes
         })
-        if (aiRes && aiRes.code === 0 && aiRes.data) {
-          this.setData({ aiRecommend: aiRes.data })
+        if (textRes && typeof textRes === 'string' && textRes.trim()) {
+          this.setData({ aiRecommend: textRes.trim() })
           return
         }
       } catch (e) {
