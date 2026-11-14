@@ -95,6 +95,12 @@ async function autoCheckoutOverdueBookings() {
       }
     })
     count += 1
+    // 通知用户已自动签退
+    await sendSubscribeNotice(b._openid, {
+      thing1: '已自动签退，今天的自习结束啦',
+      thing2: `${b.roomName || ''} ${b.seatCode || ''}号座位`,
+      time3: `${b.date} ${b.startTime}-${b.endTime}`
+    })
   }
   console.log(`[Timer] 自动签退 ${count} 条`)
   return { code: 0, data: { autoCheckout: count } }
@@ -109,12 +115,15 @@ async function sendStartReminders() {
     .get()
 
   const now = Date.now()
+  // 先从云端预过滤：只取"开始时间在未来 30 分钟内"的预约，减少无效遍历
+  const nowStr = new Date(now + 3600000).toISOString().slice(11, 16) // 当前小时 +1 作为边界
   let sent = 0
   for (const b of res.data) {
     if (b.remindedStart) continue
     const start = parseBeijingDate(`${b.date}T${b.startTime}:00`)
     const mins = Math.floor((start.getTime() - now) / 60000)
-    if (mins < 0 || mins > 30) continue
+    // 只处理开始前 1~30 分钟内的（mins<0 是已开始的，跳过；mins>30 是太远的）
+    if (mins < 1 || mins > 30) continue
 
     const ok = await sendSubscribeNotice(b._openid, {
       thing1: '你的预约即将开始，记得签到',
@@ -874,7 +883,7 @@ async function cancelBooking({ bookingId }, { OPENID }) {
   await db.collection('bookings').doc(bookingId).update({
     data: {
       status: 'cancelled',
-      cancelledBy: booking.data._openid === OPENID ? 'user' : 'admin',
+      cancelledBy: booking._openid === OPENID ? 'user' : 'admin',
       cancelledAt: db.serverDate()
     }
   })
@@ -1209,17 +1218,24 @@ async function adminDeleteUser({ openid }, { OPENID }) {
   if (u.isAdmin) return { code: 400, message: '不能删除管理员，请先取消其管理员权限' }
 
   // 连带删除预约记录
+  let removedBookings = 0
   try {
-    const bookingsRes = await db.collection('bookings').where({ _openid: openid }).remove()
-    console.log(`[adminDeleteUser] 已删除 ${bookingsRes.stats.removed} 条预约`)
+    const r = await db.collection('bookings').where({ _openid: openid }).remove()
+    removedBookings = r.stats.removed || 0
   } catch (e) {
     console.warn('[adminDeleteUser] 删预约失败:', e.message)
+  }
+
+  // 连带删除其他集合（防止孤儿数据）
+  const orphans = ['posts', 'comments', 'suggestions', 'locks']
+  for (const col of orphans) {
+    try { await db.collection(col).where({ _openid: openid }).remove() } catch (e) {}
   }
 
   // 删除用户
   await db.collection('users').doc(u._id).remove()
 
-  return { code: 0, message: `已删除用户「${u.name || u.nickName || ''}」及其预约记录` }
+  return { code: 0, message: `已删除用户「${u.name || u.nickName || ''}」及其 ${removedBookings} 条预约` }
 }
 
 async function adminGetBookings(params, { OPENID }) {
