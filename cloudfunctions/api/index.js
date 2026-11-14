@@ -838,15 +838,29 @@ async function getMyBookings({ status }, { OPENID }) {
 }
 
 async function cancelBooking({ bookingId }, { OPENID }) {
-  const booking = await db.collection('bookings').doc(bookingId).get()
+  let booking
+  try {
+    const res = await db.collection('bookings').doc(bookingId).get()
+    booking = res.data
+  } catch (e) {
+    return { code: 404, message: '预约不存在' }
+  }
+  if (!booking) return { code: 404, message: '预约不存在' }
 
-  if (booking.data._openid !== OPENID) {
+  if (booking._openid !== OPENID) {
     const isAdmin = await checkIsAdmin(OPENID)
     if (!isAdmin) return { code: 403, message: '无权限' }
   }
 
-  if (booking.data.status === 'completed') {
+  // 幂等处理：已取消/已完成 → 直接返回成功（前端重试时避免误导）
+  if (booking.status === 'cancelled') {
+    return { code: 0, message: '预约已取消' }
+  }
+  if (booking.status === 'completed') {
     return { code: 400, message: '预约已完成，无法取消' }
+  }
+  if (booking.status === 'checkedin') {
+    return { code: 400, message: '已签到的预约不能取消，请先签退' }
   }
 
   await db.collection('bookings').doc(bookingId).update({
@@ -865,34 +879,47 @@ async function cancelBooking({ bookingId }, { OPENID }) {
 async function checkIn({ bookingId }, { OPENID }) {
   console.log('[checkIn] 请求参数:', { bookingId, OPENID })
 
-  const booking = await db.collection('bookings').doc(bookingId).get()
-  console.log('[checkIn] 预约记录:', JSON.stringify(booking.data))
+  let bookingDoc, bookingData
+  try {
+    const res = await db.collection('bookings').doc(bookingId).get()
+    bookingDoc = res
+    bookingData = res.data
+  } catch (e) {
+    return { code: 404, message: '预约不存在' }
+  }
+  if (!bookingData) return { code: 404, message: '预约不存在' }
+  console.log('[checkIn] 预约记录:', JSON.stringify(bookingData))
 
-  if (booking.data._openid !== OPENID) {
-    console.log('[checkIn] openid 不匹配:', booking.data._openid, '!==', OPENID)
+  if (bookingData._openid !== OPENID) {
+    console.log('[checkIn] openid 不匹配:', bookingData._openid, '!==', OPENID)
     return { code: 403, message: '非本人预约' }
   }
 
   // 兜底：先检查是否已超时（开始15分钟未签到）→ 自动取消
-  const wasTimeoutCancelled = await autoCancelIfTimeout(booking)
+  const wasTimeoutCancelled = await autoCancelIfTimeout(bookingDoc)
   if (wasTimeoutCancelled) {
     console.log('[checkIn] 已超时，系统自动取消')
     return { code: 410, message: '预约超时：开始15分钟后仍未签到，系统自动取消' }
   }
 
-  if (booking.data.status !== 'booked') {
-    console.log('[checkIn] 状态不是 booked:', booking.data.status)
-    return { code: 400, message: `当前状态无法签到（状态: ${booking.data.status}）` }
+  // 幂等处理：已签到 → 直接返回成功
+  if (bookingData.status === 'checkedin') {
+    return { code: 0, message: '签到成功（已签到）' }
+  }
+
+  if (bookingData.status !== 'booked') {
+    console.log('[checkIn] 状态不是 booked:', bookingData.status)
+    return { code: 400, message: `当前状态无法签到（状态: ${bookingData.status}）` }
   }
 
   // 还没到开始时间（比较用真实当前时间）
   const now = new Date()
-  const bookingStart = parseBeijingDate(`${booking.data.date}T${booking.data.startTime}:00`)
+  const bookingStart = parseBeijingDate(`${bookingData.date}T${bookingData.startTime}:00`)
   const diffStartMin = (now - bookingStart) / 60000
 
   console.log('[checkIn] 时间检查:', {
     nowUTC: now.toISOString(),
-    bookingTime: `${booking.data.startTime}-${booking.data.endTime}`,
+    bookingTime: `${bookingData.startTime}-${bookingData.endTime}`,
     diffStartMin: Math.round(diffStartMin)
   })
 
@@ -917,13 +944,25 @@ async function checkIn({ bookingId }, { OPENID }) {
 }
 
 async function checkOut({ bookingId }, { OPENID }) {
-  const booking = await db.collection('bookings').doc(bookingId).get()
+  let bookingData
+  try {
+    const res = await db.collection('bookings').doc(bookingId).get()
+    bookingData = res.data
+  } catch (e) {
+    return { code: 404, message: '预约不存在' }
+  }
+  if (!bookingData) return { code: 404, message: '预约不存在' }
 
-  if (booking.data._openid !== OPENID) {
+  if (bookingData._openid !== OPENID) {
     return { code: 403, message: '非本人预约' }
   }
 
-  if (booking.data.status !== 'checkedin') {
+  // 幂等处理：已完成 → 直接返回成功
+  if (bookingData.status === 'completed') {
+    return { code: 0, message: '签退成功（已完成）' }
+  }
+
+  if (bookingData.status !== 'checkedin') {
     return { code: 400, message: '当前状态无法签退' }
   }
 
@@ -935,16 +974,31 @@ async function checkOut({ bookingId }, { OPENID }) {
 }
 
 async function getCheckinInfo({ bookingId }, { OPENID }) {
-  const booking = await db.collection('bookings').doc(bookingId).get()
-  if (booking.data._openid !== OPENID) {
+  let bookingDoc, bookingData
+  try {
+    const res = await db.collection('bookings').doc(bookingId).get()
+    bookingDoc = res
+    bookingData = res.data
+  } catch (e) {
+    return { code: 404, message: '预约不存在' }
+  }
+  if (!bookingData) return { code: 404, message: '预约不存在' }
+
+  if (bookingData._openid !== OPENID) {
     const isAdmin = await checkIsAdmin(OPENID)
     if (!isAdmin) return { code: 403, message: '无权限' }
   }
   // 兜底：已超时自动取消
-  await autoCancelIfTimeout(booking)
+  await autoCancelIfTimeout(bookingDoc)
   // 重新读一下最新状态
-  const fresh = await db.collection('bookings').doc(bookingId).get()
-  return { code: 0, data: fresh.data }
+  let freshData
+  try {
+    const fresh = await db.collection('bookings').doc(bookingId).get()
+    freshData = fresh.data
+  } catch (e) {
+    return { code: 404, message: '预约不存在' }
+  }
+  return { code: 0, data: freshData }
 }
 
 // ============ 管理员相关 ============
