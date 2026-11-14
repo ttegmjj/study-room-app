@@ -167,6 +167,45 @@
   padding: 0 30rpx;
 }
 
+/* ===== 收藏座位空状态 ===== */
+.fav-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 20rpx;
+  gap: 8rpx;
+}
+.fav-empty-icon {
+  font-size: 56rpx;
+  margin-bottom: 8rpx;
+}
+.fav-empty-text {
+  font-size: 30rpx;
+  color: #999;
+}
+.fav-empty-hint {
+  font-size: 24rpx;
+  color: #bbb;
+}
+.fav-empty-btn {
+  margin-top: 20rpx;
+  padding: 12rpx 40rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 26rpx;
+  border-radius: 40rpx;
+}
+
+/* 菜单徽标 */
+.menu-badge {
+  background: #ff6b6b;
+  color: #fff;
+  font-size: 22rpx;
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+  margin-right: 12rpx;
+}
+
 .menu-item {
   display: flex;
   align-items: center;

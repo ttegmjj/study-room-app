@@ -209,4 +209,32 @@ Page({
       }
     })
   },
+
+  /** 空收藏引导：跳第一个自习室 */
+  async goToFirstRoom() {
+    try {
+      const rooms = await api.getRooms()
+      if (rooms && rooms.length > 0) {
+        wx.navigateTo({ url: `/pages/booking/booking?roomId=${rooms[0]._id}&roomName=${encodeURIComponent(rooms[0].name)}` })
+      } else {
+        wx.showToast({ title: '暂无开放自习室', icon: 'none' })
+      }
+    } catch (e) {
+      wx.showToast({ title: '加载失败', icon: 'none' })
+    }
+  },
+
+  /** 菜单"我的收藏座位"入口 */
+  goToFavBookings() {
+    const favs = this.data.favoriteSeats
+    if (!favs || favs.length === 0) {
+      this.goToFirstRoom()
+      return
+    }
+    // 有收藏 → 直接用第一个收藏跳预约页
+    const f = favs[0]
+    wx.navigateTo({
+      url: `/pages/booking/booking?roomId=${f.roomId}&roomName=${encodeURIComponent(f.roomName)}&seatId=${f.seatId}&seatCode=${encodeURIComponent(f.seatCode)}`
+    })
+  },
 })
