@@ -38,7 +38,26 @@ Page({
     this.data.timer = setInterval(() => {
       this.setData({ currentTime: util.formatTime(new Date()) })
       this.updateCheckButtons()
+      // 每 20 秒从云端同步一次状态（自动签退/取消后能及时反映）
+      const nowMs = Date.now()
+      if (!this._lastCloudSync || nowMs - this._lastCloudSync > 20000) {
+        this._lastCloudSync = nowMs
+        this.syncCloudStatus()
+      }
     }, 1000)
+  },
+
+  /** 从云端拉最新状态，如果和本地不一样就整体刷新 */
+  async syncCloudStatus() {
+    if (!this.data.bookingId || this.data.loading) return
+    try {
+      const fresh = await api.getCheckinInfo(this.data.bookingId)
+      const localStatus = this.data.booking && this.data.booking.status
+      if (fresh.status !== localStatus) {
+        console.log('[checkin] 云端状态变化', localStatus, '→', fresh.status)
+        await this.loadBooking()
+      }
+    } catch (e) { /* 静默忽略，不打扰用户 */ }
   },
 
   /** 扫码后：按签到短码找到该自习室，再定位自己当天的预约 */

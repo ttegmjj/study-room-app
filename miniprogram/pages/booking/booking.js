@@ -91,6 +91,15 @@ Page({
     }
   },
 
+  /** 离开页面时释放选座临时锁（防止残留挡住别人） */
+  onHide() {
+    this.releaseCurrentLock()
+  },
+
+  onUnload() {
+    this.releaseCurrentLock()
+  },
+
   async loadRoomDetail() {
     try {
       const room = await api.getRoomDetail(this.data.roomId)
