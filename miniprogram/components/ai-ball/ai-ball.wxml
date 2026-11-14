@@ -1,6 +1,6 @@
 <!-- components/ai-ball/ai-ball.wxml -->
 
-<!-- 悬浮球本体（fixed 全屏悬浮，使用 catchtouch 阻止冒泡） -->
+<!-- 悬浮球本体 -->
 <view
   wx:if="{{showBall}}"
   class="ai-ball"
@@ -15,13 +15,15 @@
   <view class="ai-ball-ring"></view>
 </view>
 
-<!-- 对话浮层（点击悬浮球打开） -->
+<!-- 对话浮层 -->
 <view
   wx:if="{{showPanel}}"
   class="ai-panel-mask"
   catchtap="closePanel"
 >
-  <view class="ai-panel" catchtap="">
+  <!-- panel 根节点：阻止事件冒泡到 mask，防止点面板内部关闭 -->
+  <view class="ai-panel" catchtap="stopBubble">
+
     <!-- 头部 -->
     <view class="ai-panel-head">
       <text class="ai-panel-title">🤖 AI 小自</text>
@@ -70,9 +72,6 @@
         bindinput="onInput"
         confirm-type="send"
         bindconfirm="sendAI"
-        adjust-position="{{false}}"
-        hold-keyboard="true"
-        catchtap=""
       />
       <view
         class="ai-send-btn {{loading ? 'disabled' : ''}}"

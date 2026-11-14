@@ -106,6 +106,7 @@ Component({
     },
     onBallTap() { this.setData({ showPanel: true }) },
     closePanel() { this.setData({ showPanel: false }) },
+    stopBubble() {},
     onInput(e) { this.setData({ input: e.detail.value }) },
     onPreset(e) { this.setData({ input: e.currentTarget.dataset.text }) },
     onClear() { this.setData({ input: '', output: '' }) },
