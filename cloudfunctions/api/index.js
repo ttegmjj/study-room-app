@@ -490,6 +490,54 @@ async function recognizeSeats({ roomId, fileID }, { OPENID }) {
   }
 }
 
+// ============ AI 对话（给 ai-ball 悬浮球用） ============
+async function aiChat({ text }) {
+  if (!text) return { code: 400, message: '缺少问题' }
+  if (typeof cloud.ai !== 'function') {
+    return { code: 501, message: 'AI 未开通', data: null }
+  }
+  try {
+    const ai = cloud.ai()
+    const model = ai.createModel('cloudbase')
+    const res = await model.generateText({
+      model: 'deepseek/deepseek-flash',
+      temperature: 0.7,
+      messages: [
+        { role: 'system', content: '你是自习室AI助手小自。回答简洁直接，80字内，语气友好。' },
+        { role: 'user', content: String(text).slice(0, 500) }
+      ]
+    }, { timeout: 10000 })
+    return { code: 0, data: (res && res.text) ? res.text.trim() : '' }
+  } catch (err) {
+    console.error('[aiChat]', err.message)
+    return { code: 500, message: err.message, data: null }
+  }
+}
+
+// ============ AI 选座推荐（给 booking 页用） ============
+async function aiRecommendSeat(data) {
+  const { roomName, date, startTime, endTime, total, available, booked, occupy, favoriteCodes } = data || {}
+  if (typeof cloud.ai !== 'function') {
+    return { code: 501, message: 'AI 未开通', data: null }
+  }
+  try {
+    const ai = cloud.ai()
+    const model = ai.createModel('cloudbase')
+    const res = await model.generateText({
+      model: 'deepseek/deepseek-flash',
+      temperature: 0.5,
+      messages: [
+        { role: 'system', content: '你是自习室选座助手。简洁直接，60字内。' },
+        { role: 'user', content: `${roomName || ''} ${date || ''} ${startTime || ''}-${endTime || ''} 共${total || 0}座 空${available || 0} 已约${booked || 0} 现场${occupy || 0} 常坐${favoriteCodes || '无'}。给我紧张度+选座建议+鼓励。` }
+      ]
+    }, { timeout: 10000 })
+    return { code: 0, data: (res && res.text) ? res.text.trim() : '' }
+  } catch (err) {
+    console.error('[aiRecommendSeat]', err.message)
+    return { code: 500, message: err.message, data: null }
+  }
+}
+
 // ============ 扫码签到 ============
 
 /** 生成 8 位签到短码（小程序码 scene 最长 32 字符，不能直接放 roomId） */
@@ -2217,6 +2265,8 @@ exports.main = async (event, context) => {
       case 'addSeats': return await addSeats(params, wxContext)
       case 'removeSeats': return await removeSeats(params, wxContext)
       case 'recognizeSeats': return await recognizeSeats(params, wxContext)
+      case 'aiChat': return await aiChat(params)
+      case 'aiRecommendSeat': return await aiRecommendSeat(params)
       case 'getRoomQrCode': return await getRoomQrCode(params, wxContext)
       case 'findScanBooking': return await findScanBooking(params, wxContext)
 

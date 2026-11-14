@@ -170,6 +170,10 @@ module.exports = {
   updateBookingStatus: (bookingId, status) => call('updateBookingStatus', { bookingId, status }),
   getStats: (date) => call('getStats', { date }),
 
+  // AI（走云函数，稳定不崩）
+  aiChat: (text) => call('aiChat', { text }),
+  aiRecommendSeat: (data) => call('aiRecommendSeat', data),
+
   // 用户
   getUserInfo: () => call('getUserInfo'),
   updateUserInfo: (data) => call('updateUserInfo', data),

@@ -122,47 +122,19 @@ Component({
         return
       }
 
-      // 2. 关键词没匹配到 → 试 AI（如果 AI 能用的话）
+      // 2. 关键词没匹配到 → 调云函数 AI（稳定，无基础库兼容性问题）
       this.setData({ loading: true, output: '' })
 
       try {
-        if (!wx.cloud || !wx.cloud.extend || !wx.cloud.extend.AI) {
-          this.setData({ output: '这个问题我还没学到 😅 试试"备考方法""推荐时段""累了怎么调整"？' })
-          this.setData({ loading: false })
-          return
+        const api = require('../../utils/api.js')
+        const res = await api.aiChat(text)
+        if (res && res.code === 0 && res.data) {
+          this.setData({ output: res.data })
+        } else {
+          this.setData({ output: '这个问题我还在学习中 📚 试试"备考方法""推荐时段""累了怎么调整"？' })
         }
-
-        const model = wx.cloud.extend.AI.createModel('cloudbase')
-        const modelName = 'deepseek/deepseek-flash'
-        const messages = [
-          { role: 'system', content: '你是自习室AI助手小自。回答简洁直接，80字内，语气友好。' },
-          { role: 'user', content: text }
-        ]
-
-        const aiPromise = (async () => {
-          const res = await model.streamText({ data: { model: modelName, messages } })
-          let content = ''
-          try {
-            const ASYNC_ITER = (typeof Symbol !== 'undefined' && Symbol.asyncIterator)
-              ? Symbol.asyncIterator : '@@asyncIterator'
-            const iter = res.textStream && res.textStream[ASYNC_ITER]
-              ? res.textStream[ASYNC_ITER]() : null
-            if (iter) {
-              let r
-              while (!(r = await iter.next()).done) {
-                content += (r.value || '')
-              }
-            }
-          } catch (_) {}
-          return content
-        })()
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('AI timeout')), 8000)
-        })
-        const content = await Promise.race([aiPromise, timeoutPromise]).catch(() => '')
-        this.setData({ output: content || 'AI 没返回内容，换个说法试试？' })
       } catch (err) {
-        // AI 调不通（403 Forbidden / 超时 / 网络错）→ 给通用回复
+        console.error('[ai-ball]', err && err.message)
         this.setData({ output: '这个问题我还在学习中 📚 试试"备考方法""推荐时段""累了怎么调整"？' })
       } finally {
         this.setData({ loading: false })

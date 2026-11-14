@@ -179,38 +179,23 @@ Page({
       let seatTip = nearbyAisles > 0 ? `过道旁还剩 ${nearbyAisles} 个，进出方便` : '靠里位置更安静'
       const dynamicFallback = `${level}｜${tip} ${seatTip} ✨`
 
-      // AI 尝试（streamText + 8s 超时 + 兼容所有基础库版本，不用 for await）
-      const model = wx.cloud.extend.AI.createModel('cloudbase')
-      const aiPromise = (async () => {
-        const res = await model.streamText({
-          data: {
-            model: 'deepseek/deepseek-flash',
-            messages: [
-              { role: 'system', content: '你是自习室选座助手。简洁直接，60字内。' },
-              { role: 'user', content: `${roomName} ${selectedDate} ${selectedStartTime}-${selectedEndTime} 共${total}座 空${available.length} 已约${bookedCount} 现场${occupyCount} 常坐${favoriteCodes}。给我紧张度+选座建议+鼓励。` }
-            ]
-          }
+      // AI 尝试（走云函数，稳定）
+      try {
+        const aiRes = await api.aiRecommendSeat({
+          roomName, date: selectedDate,
+          startTime: selectedStartTime, endTime: selectedEndTime,
+          total, available: available.length, booked: bookedCount,
+          occupy: occupyCount, favoriteCodes
         })
-        let content = ''
-        try {
-          const ASYNC_ITER = (typeof Symbol !== 'undefined' && Symbol.asyncIterator)
-            ? Symbol.asyncIterator : '@@asyncIterator'
-          const iter = res.textStream && res.textStream[ASYNC_ITER]
-            ? res.textStream[ASYNC_ITER]() : null
-          if (iter) {
-            let r
-            while (!(r = await iter.next()).done) {
-              content += (r.value || '')
-            }
-          }
-        } catch (_) {}
-        return content
-      })()
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('AI timeout')), 8000)
-      })
-      const content = await Promise.race([aiPromise, timeoutPromise]).catch(() => '')
-      this.setData({ aiRecommend: content || dynamicFallback })
+        if (aiRes && aiRes.code === 0 && aiRes.data) {
+          this.setData({ aiRecommend: aiRes.data })
+          return
+        }
+      } catch (e) {
+        console.error('[AI recommend]', e && e.message)
+      }
+      // AI 不可用降级到动态推荐
+      this.setData({ aiRecommend: dynamicFallback })
     } catch (err) {
       console.error('[AI recommend]', err)
       // AI 调不通（403/超时/网络错）→ 给动态推荐
