@@ -1,4 +1,5 @@
 {
+  "timeout": 15,
   "permissions": {
     "openapi": [
       "subscribeMessage.send",
