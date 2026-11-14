@@ -479,6 +479,33 @@
   color: #666;
 }
 
+.seat-info-line {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.fav-toggle {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 24rpx;
+  border: 1rpx solid #ddd;
+  margin-left: 8rpx;
+}
+
+.fav-off {
+  color: #999;
+  background: #fafafa;
+  border-color: #e0e0e0;
+}
+
+.fav-on {
+  color: #fff;
+  background: linear-gradient(135deg, #ffb347, #ff8c42);
+  border-color: transparent;
+}
+
 .highlight {
   color: #4A90D9;
   font-weight: bold;
