@@ -305,14 +305,34 @@
   line-height: 1;
 }
 
-/* t2: 已收藏座位右上角 ⭐ 角标 */
-.seat-fav-badge {
+/* t2: 座位右下角星星收藏按钮 */
+.seat-star {
   position: absolute;
-  top: -8rpx;
-  left: -4rpx;
+  right: -4rpx;
+  bottom: -4rpx;
+  width: 28rpx;
+  height: 28rpx;
   font-size: 22rpx;
-  line-height: 1;
-  filter: drop-shadow(0 1rpx 2rpx rgba(0,0,0,0.2));
+  line-height: 28rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1rpx 3rpx rgba(0,0,0,0.15);
+  z-index: 2;
+}
+.seat-star-off {
+  color: #c8c8c8;
+  filter: grayscale(0.3);
+}
+.seat-star-on {
+  color: #FFB300;
+  filter: drop-shadow(0 1rpx 2rpx rgba(255, 179, 0, 0.4));
+  animation: star-pop 0.25s ease-out;
+}
+@keyframes star-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
 }
 
 /* 现场占用：红色角标 */
