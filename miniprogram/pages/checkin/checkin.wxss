@@ -137,6 +137,31 @@
   gap: 12rpx;
 }
 
+/* 签退提醒：黄色（剩余 ≤ 5 分钟） */
+.tip-warning-big.tip-warning-warn {
+  background: #fff9e6;
+  border-color: #ffd93d;
+}
+.tip-warning-big.tip-warning-warn .warning-text {
+  color: #b8860b;
+}
+
+/* 签退提醒：红色（已超时） */
+.tip-warning-big.tip-warning-overdue {
+  background: #ffe8e8;
+  border-color: #ff4d4f;
+  animation: pulse-red 1.2s ease-in-out infinite;
+}
+.tip-warning-big.tip-warning-overdue .warning-text {
+  color: #cf1322;
+  font-weight: bold;
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.4); }
+  50%      { box-shadow: 0 0 0 16rpx rgba(255, 77, 79, 0); }
+}
+
 .warning-icon {
   font-size: 48rpx;
 }

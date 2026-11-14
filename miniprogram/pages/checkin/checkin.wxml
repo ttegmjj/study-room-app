@@ -75,8 +75,14 @@
       </block>
 
       <block wx:elif="{{booking.status === 'checkedin'}}">
-        <view class="action-btn btn-large" bindtap="doCheckOut">
-          🚪 立即签退
+        <!-- 签退提醒（结束前5分钟 / 已超时） -->
+        <view wx:if="{{checkoutWarnText}}" class="tip-warning-big tip-warning-{{checkoutWarnLevel}}">
+          <view class="warning-icon">{{checkoutWarnLevel === 'overdue' ? '🚨' : '⏰'}}</view>
+          <view class="warning-text">{{checkoutWarnText}}</view>
+        </view>
+
+        <view class="action-btn btn-large {{checkoutWarnLevel === 'overdue' ? 'btn-danger' : ''}}" bindtap="doCheckOut">
+          🚪 {{checkoutWarnLevel === 'overdue' ? '立即签退！' : '立即签退'}}
         </view>
       </block>
 

@@ -14,7 +14,10 @@ Page({
     // 签到按钮状态
     canCheckIn: false,
     canCheckOut: false,
-    timeWarning: ''   // 超时/未到时间提示
+    timeWarning: '',   // 超时/未到时间提示
+    // 签退提醒
+    checkoutWarnText: '',    // 签退提醒文案
+    checkoutWarnLevel: ''    // '' | 'warn'（剩余5分钟）| 'overdue'（已超时）
   },
 
   onLoad(options) {
@@ -85,13 +88,15 @@ Page({
     }
   },
 
-  /** 根据状态+时间计算按钮可用 */
+  /** 根据状态+时间计算按钮可用 + 签退提醒 */
   updateCheckButtons() {
     const b = this.data.booking
     if (!b) return
 
     let canCheckIn = false
     let timeWarning = ''
+    let checkoutWarnText = ''
+    let checkoutWarnLevel = ''
 
     if (b.status === 'booked') {
       const now = new Date()
@@ -101,21 +106,33 @@ Page({
       const diffTimeoutMin = (now - timeoutAt) / 60000
 
       if (diffStartMin < 0) {
-        // 还没到
         canCheckIn = false
         timeWarning = `签到时间未到（还有 ${Math.abs(Math.round(diffStartMin))} 分钟）`
       } else if (diffTimeoutMin > 0) {
-        // 已过签到时限（开始15分钟未签到）
         canCheckIn = false
         timeWarning = '已过签到时限（开始后15分钟未签到），预约将被自动取消'
       } else {
-        // 正常时间（开始 ~ 开始后15分钟内）
         canCheckIn = true
       }
     }
 
+    if (b.status === 'checkedin') {
+      const now = new Date()
+      const end = new Date(`${b.date}T${b.endTime}:00`)
+      const remainMin = (end - now) / 60000
+
+      if (remainMin <= 0) {
+        checkoutWarnLevel = 'overdue'
+        checkoutWarnText = `已超时 ${Math.abs(Math.round(remainMin))} 分钟未签退，请尽快签退`
+      } else if (remainMin <= 5) {
+        checkoutWarnLevel = 'warn'
+        checkoutWarnText = `⏰ 还剩 ${Math.round(remainMin)} 分钟结束，请尽快签退`
+      }
+      // > 5 分钟：正常，不提醒
+    }
+
     const canCheckOut = b.status === 'checkedin'
-    this.setData({ canCheckIn, canCheckOut, timeWarning })
+    this.setData({ canCheckIn, canCheckOut, timeWarning, checkoutWarnText, checkoutWarnLevel })
   },
 
   async doCheckIn() {
