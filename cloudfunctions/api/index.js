@@ -696,6 +696,13 @@ async function createBooking(params, { OPENID }) {
     return { code: 403, message: '该自习室暂停开放，请选择其他自习室' }
   }
 
+  // 校验 seatId 真在 rooms.seats 数组里存在（防篡改请求）
+  const seats = room.seats || []
+  const seatExists = seats.some(s => s && s.id === seatId)
+  if (!seatExists) {
+    return { code: 400, message: '座位不存在，请刷新后重试' }
+  }
+
   // t1: 最短预约时长校验（room.minMinutes 分钟）
   const minMinutes = Number(room.minMinutes) || 30
   const durationMin = (parseInt(endTime.slice(0, 2)) * 60 + parseInt(endTime.slice(3))) -
@@ -1240,9 +1247,36 @@ async function updateBookingStatus(params, { OPENID }) {
   const isAdmin = await checkIsAdmin(OPENID)
   if (!isAdmin) return { code: 403, message: '无权限' }
 
-  await db.collection('bookings').doc(bookingId).update({
-    data: { status, updatedAt: db.serverDate() }
-  })
+  // status 白名单，防止传任意值污染数据
+  const ALLOWED_STATUS = ['booked', 'checkedin', 'completed', 'cancelled']
+  if (!ALLOWED_STATUS.includes(status)) {
+    return { code: 400, message: `非法状态，仅允许: ${ALLOWED_STATUS.join(', ')}` }
+  }
+
+  let booking
+  try {
+    const res = await db.collection('bookings').doc(bookingId).get()
+    booking = res.data
+  } catch (e) {
+    return { code: 404, message: '预约不存在' }
+  }
+
+  // 禁止改回 booked（从已完成/已取消）— 会搞乱统计
+  if (status === 'booked' && (booking.status === 'completed' || booking.status === 'cancelled')) {
+    return { code: 400, message: '不能将已完成/已取消的预约改回待开始' }
+  }
+
+  const updateData = { status, updatedAt: db.serverDate() }
+  if (status === 'completed' && booking.status === 'checkedin' && !booking.checkOutTime) {
+    updateData.checkOutTime = db.serverDate()
+    updateData.autoCheckout = true
+  }
+  if (status === 'cancelled') {
+    updateData.cancelledBy = 'admin'
+    updateData.cancelledAt = db.serverDate()
+  }
+
+  await db.collection('bookings').doc(bookingId).update({ data: updateData })
 
   return { code: 0, message: '更新成功' }
 }
