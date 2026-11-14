@@ -1227,7 +1227,7 @@ async function adminDeleteUser({ openid }, { OPENID }) {
   }
 
   // 连带删除其他集合（防止孤儿数据）
-  const orphans = ['posts', 'comments', 'suggestions', 'locks']
+  const orphans = ['posts', 'postComments', 'suggestions', 'locks']
   for (const col of orphans) {
     try { await db.collection(col).where({ _openid: openid }).remove() } catch (e) {}
   }
