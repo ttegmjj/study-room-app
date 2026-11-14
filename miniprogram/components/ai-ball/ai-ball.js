@@ -132,26 +132,24 @@ Component({
           return
         }
 
-        const provider = wx.cloud.extend.AI.createModel('cloudbase')
-        const model = 'deepseek/deepseek-flash'  // V4-Flash 原厂直供已下线，迁移到 V4.1-Flash
+        const model = wx.cloud.extend.AI.createModel('cloudbase')
+        const modelName = 'deepseek/deepseek-flash'
         const messages = [
           { role: 'system', content: '你是自习室AI助手小自。回答简洁直接，80字内，语气友好。' },
           { role: 'user', content: text }
         ]
 
-        // 非流式 + 8s 超时
-        const aiPromise = provider.generateText({ model, messages })
+        // streamText + 8s 超时
+        const aiPromise = (async () => {
+          const res = await model.streamText({ data: { model: modelName, messages } })
+          let content = ''
+          for await (const chunk of res.textStream) { content += chunk }
+          return content
+        })()
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('AI timeout')), 8000)
         })
-        const res = await Promise.race([aiPromise, timeoutPromise])
-
-        let content = ''
-        if (res && res.choices && res.choices[0]) {
-          content = res.choices[0].message.content || res.choices[0].message
-        } else if (typeof res === 'string') {
-          content = res
-        }
+        const content = await Promise.race([aiPromise, timeoutPromise]).catch(() => '')
         this.setData({ output: content || 'AI 没返回内容，换个说法试试？' })
       } catch (err) {
         // AI 调不通（403 Forbidden / 超时 / 网络错）→ 给通用回复

@@ -179,23 +179,26 @@ Page({
       let seatTip = nearbyAisles > 0 ? `过道旁还剩 ${nearbyAisles} 个，进出方便` : '靠里位置更安静'
       const dynamicFallback = `${level}｜${tip} ${seatTip} ✨`
 
-      // AI 尝试（8s 超时）
-      const provider = wx.cloud.extend.AI.createModel('cloudbase')
-      const aiPromise = provider.generateText({
-        model: 'deepseek/deepseek-flash',
-        messages: [
-          { role: 'system', content: '你是自习室选座助手。简洁直接，60字内。' },
-          { role: 'user', content: `${roomName} ${selectedDate} ${selectedStartTime}-${selectedEndTime} 共${total}座 空${available.length} 已约${bookedCount} 现场${occupyCount} 常坐${favoriteCodes}。给我紧张度+选座建议+鼓励。` }
-        ]
-      })
+      // AI 尝试（streamText + 8s 超时）
+      const model = wx.cloud.extend.AI.createModel('cloudbase')
+      const aiPromise = (async () => {
+        const res = await model.streamText({
+          data: {
+            model: 'deepseek/deepseek-flash',
+            messages: [
+              { role: 'system', content: '你是自习室选座助手。简洁直接，60字内。' },
+              { role: 'user', content: `${roomName} ${selectedDate} ${selectedStartTime}-${selectedEndTime} 共${total}座 空${available.length} 已约${bookedCount} 现场${occupyCount} 常坐${favoriteCodes}。给我紧张度+选座建议+鼓励。` }
+            ]
+          }
+        })
+        let content = ''
+        for await (const chunk of res.textStream) { content += chunk }
+        return content
+      })()
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('AI timeout')), 8000)
       })
-      const res = await Promise.race([aiPromise, timeoutPromise])
-
-      let content = ''
-      if (res && res.choices && res.choices[0]) content = res.choices[0].message.content || res.choices[0].message
-      else if (typeof res === 'string') content = res
+      const content = await Promise.race([aiPromise, timeoutPromise]).catch(() => '')
       this.setData({ aiRecommend: content || dynamicFallback })
     } catch (err) {
       console.error('[AI recommend]', err)
