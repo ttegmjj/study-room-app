@@ -405,6 +405,18 @@ Page({
     }
   },
 
+  /** 弹窗里的收藏按钮（用 selectedSeat 当前状态） */
+  toggleFavoriteModal() {
+    const seat = this.data.selectedSeat
+    if (!seat) return
+    const fakeEvt = {
+      currentTarget: {
+        dataset: { seatid: seat.id, seatcode: seat.code }
+      }
+    }
+    this.toggleFavorite(fakeEvt)
+  },
+
   /** 判断某座位是否已收藏（给 WXML 用） */
   isFavoriteSeat(seatId) {
     return this.data.favoriteSeats.some(s => s.roomId === this.data.roomId && s.seatId === seatId)

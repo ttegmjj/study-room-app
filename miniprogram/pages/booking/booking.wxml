@@ -94,14 +94,9 @@
                     data-seatcode="{{item.code}}"
                   >
                     {{item.code}}
+                    <text class="seat-fav-badge" wx:if="{{item._favorite}}">⭐</text>
                     <text wx:if="{{item.occupy}}" class="seat-occupy-badge">现场</text>
                     <text wx:elif="{{item.booked}}" class="seat-booked-badge">有约</text>
-                    <view
-                      class="seat-star {{item._favorite ? 'seat-star-on' : 'seat-star-off'}}"
-                      catchtap="toggleFavorite"
-                      data-seatid="{{item.id}}"
-                      data-seatcode="{{item.code}}"
-                    >⭐</view>
                   </view>
                   <view wx:if="{{item.gapAfter}}" class="seat-gap">
                     <text class="seat-gap-label">过道</text>
@@ -222,6 +217,16 @@
 
       <view class="modal-sel {{selRangeText ? '' : 'modal-sel-empty'}}">
         {{selRangeText || '点击长条选择时段（每格 30 分钟）'}}
+      </view>
+
+      <!-- 收藏按钮 -->
+      <view class="modal-fav-row" wx:if="{{selectedSeat}}">
+        <view
+          class="modal-fav-btn {{selectedSeat._favorite ? 'modal-fav-on' : 'modal-fav-off'}}"
+          bindtap="toggleFavoriteModal"
+        >
+          ⭐ {{selectedSeat._favorite ? '已收藏，点一下取消' : '收藏这个座位'}}
+        </view>
       </view>
 
       <view class="modal-btns">
