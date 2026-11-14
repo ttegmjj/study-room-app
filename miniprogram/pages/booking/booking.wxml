@@ -264,14 +264,8 @@
         时间：<text class="highlight">{{selectedStartTime}} - {{selectedEndTime}}</text>
       </view>
       <view wx:else class="info-line">请选择时间</view>
-      <view wx:if="{{selectedSeat}}" class="info-line seat-info-line">
+      <view wx:if="{{selectedSeat}}" class="info-line">
         座位：<text class="highlight">{{selectedSeat.code}}</text>
-        <text class="fav-toggle {{selectedSeat._favorite ? 'fav-on' : 'fav-off'}}"
-              data-seatid="{{selectedSeat.id}}"
-              data-seatcode="{{selectedSeat.code}}"
-              bindtap="toggleFavorite">
-          {{selectedSeat._favorite ? '⭐ 已收藏' : '☆ 收藏'}}
-        </text>
       </view>
     </view>
     <view class="btn-confirm" bindtap="confirmBooking" hover-class="btn-confirm-hover">
