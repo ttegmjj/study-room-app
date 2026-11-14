@@ -94,7 +94,7 @@
       <view class="menu-divider"></view>
       <view class="menu-item" bindtap="goToFavBookings">
         <text class="menu-icon-img">⭐</text>
-        <text class="menu-label">我的收藏座位</text>
+        <text class="menu-label">收藏</text>
         <text wx:if="{{favoriteSeats.length > 0}}" class="menu-badge">{{favoriteSeats.length}}</text>
         <text class="menu-arrow">›</text>
       </view>
