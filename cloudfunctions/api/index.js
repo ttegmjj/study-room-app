@@ -73,7 +73,7 @@ async function autoCancelOverdueBookings() {
   return { code: 0, data: { scanned: res.data.length, cancelled: cancelledCount } }
 }
 
-/** 定时任务：结束时间超过 30 分钟仍未签退 → 自动签退，避免一直挂在「已签到」 */
+/** 定时任务：结束时间到点仍未签退 → 自动签退（结束即完成） */
 async function autoCheckoutOverdueBookings() {
   const res = await db.collection('bookings')
     .where({ status: 'checkedin' })
@@ -83,14 +83,15 @@ async function autoCheckoutOverdueBookings() {
   let count = 0
   for (const b of res.data) {
     const end = parseBeijingDate(`${b.date}T${b.endTime}:00`)
-    if (Date.now() <= end.getTime() + 30 * 60000) continue
+    // 结束时间到了就自动签退（留 3 分钟缓冲给可能的时钟偏差）
+    if (Date.now() <= end.getTime() + 3 * 60000) continue
 
     await db.collection('bookings').doc(b._id).update({
       data: {
         status: 'completed',
         checkOutTime: db.serverDate(),
         autoCheckout: true,
-        checkOutNote: '超过结束时间 30 分钟未签退，系统自动签退'
+        checkOutNote: '预约结束时间到，系统自动签退'
       }
     })
     count += 1
