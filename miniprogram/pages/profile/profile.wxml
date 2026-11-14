@@ -84,45 +84,6 @@
       </view>
     </view>
 
-    <!-- t2: 常用座位（收藏）— 空也显示引导 -->
-    <view class="card fav-seats-card">
-      <view class="card-head">
-        <text class="card-title"><text class="card-icon">⭐</text>常用座位</text>
-        <text class="card-sub" wx:if="{{favoriteSeats.length > 0}}">点击「去预约」快速进入</text>
-        <text class="card-sub" wx:else>去预约页点座位上的 ⭐ 收藏</text>
-      </view>
-
-      <!-- 有收藏：列表 -->
-      <view class="fav-seat-list" wx:if="{{favoriteSeats.length > 0}}">
-        <view wx:for="{{favoriteSeats}}" wx:key="seatId" class="fav-seat-item">
-          <view class="fav-seat-left">
-            <view class="fav-seat-code"><text class="fav-seat-icon">🪑</text>{{item.seatCode}}</view>
-            <view class="fav-seat-room">{{item.roomName}}</view>
-          </view>
-          <view class="fav-seat-actions">
-            <view class="fav-seat-btn"
-              data-roomid="{{item.roomId}}"
-              data-roomname="{{item.roomName}}"
-              data-seatid="{{item.seatId}}"
-              data-seatcode="{{item.seatCode}}"
-              bindtap="goToFavoriteBooking">去预约</view>
-            <view class="fav-seat-del"
-              data-roomid="{{item.roomId}}"
-              data-seatid="{{item.seatId}}"
-              bindtap="removeFavoriteSeat">移除</view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 空：引导 -->
-      <view class="fav-empty" wx:else>
-        <text class="fav-empty-icon">🪑</text>
-        <text class="fav-empty-text">还没有收藏座位</text>
-        <text class="fav-empty-hint">去自习室选个座位点 ⭐ 收藏吧</text>
-        <view class="fav-empty-btn" bindtap="goToFirstRoom">去自习室看看</view>
-      </view>
-    </view>
-
     <!-- 主菜单 -->
     <view class="card menu-card">
       <view class="menu-item" bindtap="goToMyBookings">
