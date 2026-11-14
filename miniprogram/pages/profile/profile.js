@@ -26,8 +26,16 @@ Page({
     this.syncAuthState()
     this.loadWallpaper()
     if (app.globalData.isLoggedIn) {
-      this.loadMyStats()
-      this.loadFavoriteSeats()
+      // 节流：5 秒内不重复拉（api 缓存 + 前端节流双重保障）
+      const now = Date.now()
+      if (!this._lastLoad || now - this._lastLoad > 5000) {
+        this._lastLoad = now
+        // 并行加载，减少串行等待
+        Promise.all([
+          this.loadMyStats().catch(() => {}),
+          this.loadFavoriteSeats().catch(() => {})
+        ])
+      }
       // 本地没有昵称时（换设备/清缓存后），从云端拉取已设置的资料
       if (!this.data.userInfo || !this.data.userInfo.nickName) {
         this.syncProfileFromCloud()

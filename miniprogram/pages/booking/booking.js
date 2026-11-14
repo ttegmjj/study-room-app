@@ -133,21 +133,23 @@ Page({
     }
   },
 
-  // t2: 加载收藏的常用座位
+  // t2: 加载收藏的常用座位（拉取 + 同步座位图上的收藏标记）
   async loadFavoriteSeats() {
     try {
       const list = await api.getFavoriteSeats()
-      this.setData({ favoriteSeats: list || [] })
-      // 刷新已加载的座位图上的收藏标记
-      const seats = this.data.seats || []
-      let changed = false
-      seats.forEach(group => {
-        group.seats.forEach(s => {
-          const fav = (list || []).some(f => f.roomId === this.data.roomId && f.seatId === s.id)
-          if (s._favorite !== fav) { s._favorite = fav; changed = true }
-        })
-      })
-      if (changed) this.setData({ seats })
+      // 构造一个 roomId_seatId set，快速判断
+      const favSet = {}
+      ;(list || []).forEach(f => { favSet[f.roomId + '_' + f.seatId] = true })
+
+      // 一次 setData：favoriteSeats + 座位图上的 _favorite 标记
+      const seats = (this.data.seats || []).map(group => ({
+        ...group,
+        seats: (group.seats || []).map(s => ({
+          ...s,
+          _favorite: !!favSet[this.data.roomId + '_' + s.id]
+        }))
+      }))
+      this.setData({ favoriteSeats: list || [], seats })
     } catch (e) {}
   },
 
@@ -361,20 +363,36 @@ Page({
   // t2: 收藏 / 取消收藏
   async toggleFavorite(e) {
     const { seatid, seatcode } = e.currentTarget.dataset
-    const exists = this.data.favoriteSeats.some(s => s.roomId === this.data.roomId && s.seatId === seatid)
+    const rooms_id = this.data.roomId
+    const exists = this.data.favoriteSeats.some(s => s.roomId === rooms_id && s.seatId === seatid)
 
-    const syncSelectedSeatFav = (fav) => {
+    /** 本地同步：直接改 data 里的 favoriteSeats 数组 + seats 图上的 _favorite 标记，一次 setData */
+    const localSync = (fav) => {
+      let favList = this.data.favoriteSeats.slice()
+      if (fav) {
+        if (!favList.some(s => s.roomId === rooms_id && s.seatId === seatid)) {
+          favList.push({ roomId: rooms_id, seatId: seatid, seatCode: seatcode, roomName: this.data.roomName })
+        }
+      } else {
+        favList = favList.filter(s => !(s.roomId === rooms_id && s.seatId === seatid))
+      }
+      // 同步座位图标记
+      const seats = this.data.seats || []
+      seats.forEach(group => {
+        group.seats.forEach(s => {
+          if (s.id === seatid) s._favorite = fav
+        })
+      })
       if (this.data.selectedSeat && this.data.selectedSeat.id === seatid) {
         this.data.selectedSeat._favorite = fav
-        this.setData({ selectedSeat: this.data.selectedSeat })
       }
+      this.setData({ favoriteSeats: favList, seats, selectedSeat: this.data.selectedSeat })
     }
 
     if (exists) {
       try {
-        await api.removeFavoriteSeat(this.data.roomId, seatid)
-        this.loadFavoriteSeats()
-        syncSelectedSeatFav(false)
+        await api.removeFavoriteSeat(rooms_id, seatid)
+        localSync(false)
         wx.showToast({ title: '已取消收藏', icon: 'success' })
       } catch (err) {
         wx.showToast({ title: err.message || '操作失败', icon: 'none' })
@@ -382,13 +400,12 @@ Page({
     } else {
       try {
         await api.saveFavoriteSeat({
-          roomId: this.data.roomId,
+          roomId: rooms_id,
           seatId: seatid,
           seatCode: seatcode,
           roomName: this.data.roomName
         })
-        this.loadFavoriteSeats()
-        syncSelectedSeatFav(true)
+        localSync(true)
         wx.showToast({ title: '已收藏', icon: 'success' })
       } catch (err) {
         wx.showToast({ title: err.message || '操作失败', icon: 'none' })
@@ -554,64 +571,59 @@ Page({
     this.setData({ _activeThumb: '', _stripRectLeft: 0, _stripRectWidth: 0 })
   },
 
-  /** 根据浮点槽索引更新选中区间（核心） */
+  /** 根据浮点槽索引更新选中区间（核心 —— 合并 setData 降频） */
   updateStripByFloat(floatIdx) {
     const active = this.data._activeThumb
     const slots = this.data.hourSlots
     const total = slots.length
     if (!total) return
 
-    // 是否触发了吸附：snap 后的槽 != 手指原始指向的槽
     const rawIdx = Math.round(Math.max(0, Math.min(total - 1, floatIdx)))
     let snapped, clampedEnd
+    const patch = {}
 
     if (active === 'start') {
       snapped = this.snapToNearestAvailable(floatIdx, 'right')
       if (snapped < 0) return
-      // 不能越过 end
       const endIdx = this.data.selEndIdx >= 0 ? this.data.selEndIdx : total - 1
       if (snapped > endIdx) snapped = this.snapToNearestAvailable(endIdx, 'left')
       clampedEnd = this.clampEndWithinSelectable(snapped, endIdx)
       if (snapped < 0) return
-      this.setData({ selStartIdx: snapped, selEndIdx: clampedEnd }, () => this.refreshStripSelection())
+      patch.selStartIdx = snapped
+      patch.selEndIdx = clampedEnd
     } else if (active === 'end') {
       snapped = this.snapToNearestAvailable(floatIdx, 'right')
       if (snapped < 0) return
       const startIdx = this.data.selStartIdx >= 0 ? this.data.selStartIdx : 0
       if (snapped < startIdx) snapped = this.snapToNearestAvailable(startIdx, 'right')
-      this.setData({ selEndIdx: snapped }, () => this.refreshStripSelection())
+      patch.selEndIdx = snapped
     }
 
     // 吸附反馈：原始目标 != snapped 槽 → 说明被拉回/跳过了不可选段
     if (snapped !== undefined && rawIdx !== snapped && active) {
-      this.triggerSnapFeedback(active)
+      patch.bubbleFeedback = active
+      if (!this._snapToastTimer) {
+        wx.showToast({ title: '已跳到可用时段', icon: 'none', duration: 700 })
+      }
+      clearTimeout(this._snapToastTimer)
+      this._snapToastTimer = setTimeout(() => {
+        this.setData({ bubbleFeedback: '' })
+      }, 220)
     }
+
+    // 合并：selStartIdx/selEndIdx + 6 个百分比/标签字段 → 一次 setData
+    Object.assign(patch, this._calcStripSelection(patch))
+    this.setData(patch)
   },
 
-  /** 触发一次吸附反馈：气泡抖动 + 短暂 toast */
-  triggerSnapFeedback(thumb) {
-    this.setData({ bubbleFeedback: thumb })
-    if (!this._snapToastTimer) {
-      wx.showToast({ title: '已跳到可用时段', icon: 'none', duration: 700 })
-    }
-    clearTimeout(this._snapToastTimer)
-    this._snapToastTimer = setTimeout(() => {
-      this.setData({ bubbleFeedback: '' })
-    }, 220)
-  },
-
-  /** 刷新长条选中态 + 滑块位置百分比 + 已选文本 */
-  refreshStripSelection() {
+  /** 纯计算：根据 selStartIdx/selEndIdx 算出长条渲染需要的 6 个字段（无 setData） */
+  _calcStripSelection(override) {
     const slots = this.data.hourSlots
-    const { selStartIdx, selEndIdx } = this.data
-    let selStartPct = 0
-    let selEndPct = 0
-    let thumbStartPct = 0
-    let thumbEndPct = 0
-    let thumbStartLabel = ''
-    let thumbEndLabel = ''
-    let selRangeText = ''
+    const selStartIdx = override.selStartIdx !== undefined ? override.selStartIdx : this.data.selStartIdx
+    const selEndIdx = override.selEndIdx !== undefined ? override.selEndIdx : this.data.selEndIdx
     const total = slots.length
+    let selStartPct = 0, selEndPct = 0, thumbStartPct = 0, thumbEndPct = 0
+    let thumbStartLabel = '', thumbEndLabel = '', selRangeText = ''
 
     if (selStartIdx >= 0 && selEndIdx >= 0 && total > 0) {
       selStartPct = (selStartIdx / total) * 100
@@ -629,11 +641,12 @@ Page({
       thumbEndLabel = slots[selStartIdx].endLabel
       selRangeText = `${slots[selStartIdx].label} - ${slots[selStartIdx].endLabel}`
     }
+    return { selStartPct, selEndPct, thumbStartPct, thumbEndPct, thumbStartLabel, thumbEndLabel, selRangeText }
+  },
 
-    this.setData({
-      selStartPct, selEndPct, thumbStartPct, thumbEndPct,
-      thumbStartLabel, thumbEndLabel, selRangeText
-    })
+  /** 刷新长条选中态 + 滑块位置百分比 + 已选文本（保留给 buildHourSlots/confirm 等场景） */
+  refreshStripSelection() {
+    this.setData(this._calcStripSelection({}))
   },
 
   /** 弹窗确定：把所选时段写回主页面 */
