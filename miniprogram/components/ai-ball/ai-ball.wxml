@@ -65,10 +65,13 @@
       <input
         class="ai-input"
         placeholder="问问 AI ..."
+        placeholder-class="ai-input-placeholder"
         value="{{input}}"
         bindinput="onInput"
         confirm-type="send"
         bindconfirm="sendAI"
+        adjust-position="{{false}}"
+        hold-keyboard="true"
         catchtap=""
       />
       <view

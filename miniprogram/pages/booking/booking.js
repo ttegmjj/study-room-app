@@ -192,11 +192,17 @@ Page({
           }
         })
         let content = ''
-        // 手动迭代 async iterator，彻底避免 for await 在部分机型 SyntaxError 闪退
         try {
-          const ASYNC_ITER = typeof Symbol !== 'undefined' && Symbol.asyncIterator ? Symbol.asyncIterator : '@@asyncIterator'
-          const iter = res.textStream && res.textStream[ASYNC_ITER] ? res.textStream[ASYNC_ITER]() : null
-          if (iter) { let r; while (!(r = await iter.next()).done) { content += (r.value || '') } }
+          const ASYNC_ITER = (typeof Symbol !== 'undefined' && Symbol.asyncIterator)
+            ? Symbol.asyncIterator : '@@asyncIterator'
+          const iter = res.textStream && res.textStream[ASYNC_ITER]
+            ? res.textStream[ASYNC_ITER]() : null
+          if (iter) {
+            let r
+            while (!(r = await iter.next()).done) {
+              content += (r.value || '')
+            }
+          }
         } catch (_) {}
         return content
       })()
